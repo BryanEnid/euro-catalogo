@@ -1,0 +1,11 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+  background-color: #0b1118;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("./assets/ReadexPro-VariableFont_wght.ttf");
+}

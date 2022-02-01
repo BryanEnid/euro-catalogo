@@ -1,0 +1,125 @@
+[
+  {
+    "nombre": "Covers",
+    "id": "fdfe4ec-0d25-b37f-4c1-cc2bbf480d",
+    "articulos": [
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      },
+      {
+        "imagen": "case1.jpeg",
+        "titulo": "cover liso",
+        "agotado": false,
+        "precio": {
+          "mayor": "80",
+          "detalle": "90"
+        },
+        "codigos": [
+          "2-33"
+        ],
+        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+      }
+    ]
+  }
+]
