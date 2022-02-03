@@ -1,124 +1,34 @@
 [
   {
-    "nombre": "Covers",
-    "id": "fdfe4ec-0d25-b37f-4c1-cc2bbf480d",
+    "nombre": "audifonos",
+    "id": "1ef200b-847c-bb5f-ca78-ff1472fbff2",
     "articulos": [
       {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
+        "imagen": "audifono.jpg",
+        "titulo": "airpods beats",
         "precio": {
-          "mayor": "80",
-          "detalle": "90"
+          "detalle": "90",
+          "mayor": "180"
         },
+        "agotado": false,
         "codigos": [
-          "2-33"
+          "10-a",
+          "11-12"
         ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+        "id": "02f3502-4363-3e60-871-a1bcd53acab"
       },
       {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
+        "imagen": "lolaso.jpg",
+        "titulo": "lolaso",
         "precio": {
-          "mayor": "80",
-          "detalle": "90"
+          "detalle": "100",
+          "mayor": "200"
         },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
         "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
         "codigos": [
-          "2-33"
+          "asd"
         ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
-      },
-      {
-        "imagen": "case1.jpeg",
-        "titulo": "cover liso",
-        "agotado": false,
-        "precio": {
-          "mayor": "80",
-          "detalle": "90"
-        },
-        "codigos": [
-          "2-33"
-        ],
-        "id": "7a74ccb-362b-0641-0c4c-734503e788e"
+        "id": "c2a553-661f-027-a271-eacdde77c020"
       }
     ]
   }

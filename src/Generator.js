@@ -1,17 +1,24 @@
-import React from 'react';
-import './styles/tables.css';
-import uuid from 'react-uuid';
-import { download, checkImage } from './utils';
+import React from "react";
+import "./styles/tables.css";
+import uuid from "react-uuid";
+import { download, checkImage } from "./utils";
+import _ from "lodash";
 
 const styles = {
   seccion: {
-    background: 'white',
+    background: "white",
     margin: 10,
     borderRadius: 5,
     padding: 20,
   },
   icon: {
-    position: 'relative',
+    position: "relative",
+  },
+  eliminarSeccion: {
+    background: "red",
+    borderRadius: 4,
+    color: "white",
+    border: "1px solid red",
   },
 };
 
@@ -20,13 +27,27 @@ const Generator = () => {
   const [sectionName, setSectionName] = React.useState();
   const fileRef = React.useRef();
 
+  React.useEffect(() => {
+    (async () => {
+      const response = await fetch("http://localhost:9000/load");
+      const data = await response.json();
+      setSections(data);
+    })();
+  }, []);
+
   const handleCreateSection = () => {
     if (sectionName) {
-      setSections([...sections, { nombre: sectionName, id: uuid() }]);
-      setSectionName('');
+      const data = [...sections, { nombre: sectionName, id: uuid() }];
+      const isEqual = _.isEqual(data, sections); // true
+      if (!isEqual) {
+        setSections(data);
+        setSectionName("");
+        handleSave(data);
+      }
     }
   };
 
+  // TODO: Ensenar un dialogo para confirmar
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     var reader = new FileReader();
@@ -38,14 +59,82 @@ const Generator = () => {
     const index = sections.findIndex((item) => item.id === payload.id);
     const data = [...sections];
     data[index] = { ...data[index], articulos: payload.articulos };
-    setSections(data);
+    const isEqual = _.isEqual(data, sections); // true
+    if (!isEqual) {
+      setSections(data);
+      handleSave(data);
+    }
   };
 
   const handleRename = (value, id) => {
     const index = sections.findIndex((item) => item.id === id);
     const data = [...sections];
     data[index] = { ...data[index], nombre: value };
-    setSections(data);
+    const isEqual = _.isEqual(data, sections); // true
+    if (!isEqual) {
+      setSections(data);
+      handleSave(data);
+    }
+  };
+
+  const handleSave = (data) => {
+    fetch("http://localhost:9000/save", {
+      body: JSON.stringify(data),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).catch(console.error);
+  };
+
+  // TODO: add recover deleted section
+  const handleRemoveSection = (datos) => {
+    // TODO: Prompt confirmation
+    const respuesta = window.confirm(
+      `Estas seguro que deseas borrar la seccion (${datos?.nombre?.toUpperCase()}) completa?`
+    );
+
+    if (respuesta) {
+      const confirmacion = window.confirm(
+        `Estas seguro que deseas borrar esta seccion? (${datos?.nombre?.toUpperCase()})\n\nPresiona OK nuevamete para continuar`
+      );
+      if (confirmacion) {
+        const index = sections.findIndex((item) => item.id === datos.id);
+        const data = [...sections];
+        if (index > -1) {
+          data.splice(index, 1);
+          setSections(data);
+          handleSave(data);
+        }
+      }
+    }
+  };
+
+  const generatePDF = async () => {
+    const promises = [
+      fetch("http://localhost:9000/generatePDF", {
+        method: "POST",
+        body: JSON.stringify({ salesType: "mayor" }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+      fetch("http://localhost:9000/generatePDF", {
+        method: "POST",
+        body: JSON.stringify({ salesType: "detalle" }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
+    ];
+
+    const responses = await Promise.all(promises);
+
+    for await (const response of responses) {
+      const blob = await response.blob();
+      const file = URL.createObjectURL(blob);
+      window.open(file);
+    }
   };
 
   // Render "Upload File"
@@ -53,7 +142,9 @@ const Generator = () => {
     return (
       <>
         <input type="file" onChange={handleFileUpload} />
-        <button onClick={() => setSections([])}>Generar nuevo spreadsheet</button>
+        <button onClick={() => setSections([])}>
+          Generar nuevo spreadsheet
+        </button>
       </>
     );
   }
@@ -63,26 +154,39 @@ const Generator = () => {
       <input
         value={sectionName}
         onChange={(v) => setSectionName(v.target.value)}
-        onKeyUp={({ key }) => key === 'Enter' && handleCreateSection()}
+        onKeyUp={({ key }) => key === "Enter" && handleCreateSection()}
         placeholder="Nombre de la seccion"
         type="text"
       />
       <button onClick={handleCreateSection}>Crear</button>
-
       <button onClick={() => fileRef.current.click()}>Importar</button>
-      <input style={{ display: 'none' }} onChange={handleFileUpload} type="file" ref={fileRef} />
-
+      <input
+        style={{ display: "none" }}
+        onChange={handleFileUpload}
+        type="file"
+        ref={fileRef}
+      />
+      {/* <button onClick={() => handleSave(sections)}>Guardar</button> */}
       <button onClick={() => download(sections)}>Exportar</button>
-
-      {sections.map((datos) => (
-        <Seccion datos={datos} onSubmit={handleSectionSubmit} onRename={handleRename} />
-      ))}
+      <button onClick={generatePDF}>Generar PDF</button>
+      {sections.map((datos) => {
+        return (
+          <Seccion
+            key={datos.id}
+            datos={datos}
+            onSubmit={handleSectionSubmit}
+            onRename={handleRename}
+            onDelete={handleRemoveSection}
+          />
+        );
+      })}
     </>
   );
 };
 
-const Seccion = ({ datos, onSubmit, onRename }) => {
+const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
   const [elements, setElements] = React.useState(datos.articulos ?? []);
+  const [nombre, setNombre] = React.useState(datos.nombre ?? "");
 
   const handleNewElement = () => {
     setElements([...elements, { id: uuid() }]);
@@ -93,7 +197,8 @@ const Seccion = ({ datos, onSubmit, onRename }) => {
     const data = [...elements];
     data[index] = payload;
     setElements(data);
-    onSubmit({ articulos: data, id: datos.id });
+    const body = { articulos: data, id: datos.id };
+    onSubmit(body);
   };
 
   const handleDelete = (id) => {
@@ -110,50 +215,79 @@ const Seccion = ({ datos, onSubmit, onRename }) => {
 
   return (
     <div style={styles.seccion}>
-      <input type="text" value={datos.nombre} onChange={handleSectionRename} />
+      <input
+        type="text"
+        value={nombre}
+        onChange={({ target }) => setNombre(target.value)}
+        onBlur={handleSectionRename}
+      />
 
       <table className="table_container">
         <thead>
-          <th style={{ width: '25%' }}>Nombre Imagen</th>
-          <th style={{ width: '43%' }}>Titulo</th>
-          <th style={{ width: '5%' }}>Precio</th>
-          <th style={{ width: '25%' }}>Codigos</th>
-          <th style={{ width: '2%' }}></th>
+          <th style={{ width: "22%" }}>Nombre Imagen</th>
+          <th style={{ width: "38%" }}>Titulo</th>
+          <th style={{ width: "10%" }}>Precio (Al por mayor) y (Al detalle)</th>
+          <th style={{ width: "25%" }}>Codigos</th>
+          <th style={{ width: "2%" }}>Agotado</th>
+          <th style={{ width: "2%" }}></th>
         </thead>
 
         {elements.map((data) => (
-          <Articulo data={data} onSubmit={handleSubmit} onDelete={handleDelete} />
+          <Articulo
+            key={data.id}
+            data={data}
+            onSubmit={handleSubmit}
+            onDelete={handleDelete}
+            seccion={datos.nombre}
+          />
         ))}
       </table>
-      <button onClick={handleNewElement}>+ Crear articulo nuevo</button>
+
+      <div>
+        <button onClick={handleNewElement}>+ Crear articulo nuevo</button>
+      </div>
+      <br />
+      <div>
+        <button style={styles.eliminarSeccion} onClick={() => onDelete(datos)}>
+          - Borrar seccion
+        </button>
+      </div>
     </div>
   );
 };
 
-const Articulo = ({ data, onSubmit, onDelete }) => {
-  const imageInput = React.useState(data.imagen ?? '');
-  const tituloInput = React.useState(data.titulo ?? '');
-  const precioInput = React.useState(data.precio ?? '');
-  const codigoInput1 = React.useState(data.codigos?.[0] ?? '');
-  const codigoInput2 = React.useState(data.codigos?.[1] ?? '');
-  const codigoInput3 = React.useState(data.codigos?.[2] ?? '');
+const Articulo = ({ data, onSubmit, onDelete, seccion }) => {
+  const imageInput = React.useState(data.imagen ?? "");
+  const tituloInput = React.useState(data.titulo ?? "");
+  const precioInput1 = React.useState(data.precio?.detalle ?? "");
+  const precioInput2 = React.useState(data.precio?.mayor ?? "");
+  const codigoInput1 = React.useState(data.codigos?.[0] ?? "");
+  const codigoInput2 = React.useState(data.codigos?.[1] ?? "");
+  const codigoInput3 = React.useState(data.codigos?.[2] ?? "");
+  const agotadoInput = React.useState(data.agotado ?? false);
   const [imageExists, setImageExists] = React.useState(null);
 
   const payload = () => {
+    const precios = { detalle: precioInput1[0], mayor: precioInput2[0] };
+
+    // Codigo
     const validacion = [codigoInput1[0], codigoInput2[0], codigoInput3[0]];
     const codigos = validacion.filter((item) => !!item);
 
-    return {
+    const body = {
       imagen: imageInput[0],
       titulo: tituloInput[0],
-      precio: precioInput[0],
+      precio: precios,
+      agotado: agotadoInput[0],
       codigos,
       id: data.id,
     };
+
+    return body;
   };
 
   const submit = (payload) => {
-    checkImage(`./assets/${payload.imagen}`)
+    checkImage(`./assets/${seccion}/${payload.imagen}`)
       .then(({ exists }) => {
         setImageExists(exists);
         onSubmit(payload);
@@ -164,25 +298,33 @@ const Articulo = ({ data, onSubmit, onDelete }) => {
       });
   };
 
-  const handleInput = (value, setter) => {
+  const handleInput = (value, setter, saveOnChange) => {
     setImageExists(null);
     setter(value);
+    if (saveOnChange) submit({ ...payload(), [saveOnChange]: value });
   };
 
   const handleRemoveItem = () => {
-    if (window.confirm('Desea borrar este elemento completamente?')) {
+    if (window.confirm("Desea borrar este elemento completamente?")) {
       onDelete(data.id);
     }
   };
 
-  const config = (input) => ({
-    value: input[0],
-    onChange: ({ target }) => handleInput(target.value, input[1]),
-    onBlur: () => submit(payload()),
-  });
+  const handlePreviewImage = () => {
+    window.open(`./assets/${seccion}/${imageInput[0]}`, "_blank");
+  };
+
+  const config = (input, typeValue = "value", saveOnChange = false) => {
+    return {
+      [typeValue]: input[0],
+      onChange: ({ target }) =>
+        handleInput(target[typeValue], input[1], saveOnChange),
+      ...(typeValue === "value" && { onBlur: () => submit(payload()) }),
+    };
+  };
 
   React.useEffect(() => {
-    checkImage(`./assets/${imageInput[0]}`)
+    checkImage(`./assets/${seccion}/${imageInput[0]}`)
       .then(({ exists }) => {
         setImageExists(exists);
       })
@@ -199,11 +341,21 @@ const Articulo = ({ data, onSubmit, onDelete }) => {
         <td>
           <input type="text" {...config(imageInput)} />
           {imageExists !== null && (
-            <div className="icon">
+            <div
+              className="icon"
+              style={{
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               {imageExists ? (
-                <span style={{ color: 'green' }}>&#10003;</span>
+                <>
+                  <span style={{ color: "green" }}>&#10003;</span>
+                  <button onClick={handlePreviewImage}>ver imagen</button>
+                </>
               ) : (
-                <span style={{ color: 'red' }}>&#10005;</span>
+                <span style={{ color: "red" }}>&#10005;</span>
               )}
             </div>
           )}
@@ -211,9 +363,18 @@ const Articulo = ({ data, onSubmit, onDelete }) => {
         <td>
           <input type="text" {...config(tituloInput)} />
         </td>
+
         <td>
-          <input type="text" {...config(precioInput)} />
+          <tr>
+            <td>
+              <input type="text" {...config(precioInput1)} />
+            </td>
+            <td>
+              <input type="text" {...config(precioInput2)} />
+            </td>
+          </tr>
         </td>
+
         <table>
           <tr>
             <td>
@@ -227,6 +388,14 @@ const Articulo = ({ data, onSubmit, onDelete }) => {
             </td>
           </tr>
         </table>
+
+        <td>
+          <input
+            type="checkbox"
+            {...config(agotadoInput, "checked", "agotado")}
+          />
+        </td>
+
         <td>
           <button onClick={handleRemoveItem}>borrar</button>
         </td>

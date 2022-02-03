@@ -1,13 +1,9 @@
 import React from "react";
 import "./styles.css";
-import db from "./db.json";
-
-const secciones = db;
 
 const styles = {
   app: {
     fontFamily: "ReadexPro",
-    // fontWeight: 00,
     maxWidth: 720,
     margin: "0 auto",
   },
@@ -103,11 +99,24 @@ const styles = {
 };
 
 function App({ store }) {
-  const [value, setValue] = store;
-  const { saleType } = value;
+  const [saleType, setSaleType] = React.useState("mayor");
+  const [ocultar, setOcultar] = React.useState(false);
 
   return (
     <div style={styles.app}>
+      {!ocultar && (
+        <>
+          <button onClick={() => setSaleType("mayor")} id="mayor">
+            Al por mayor
+          </button>
+          <button onClick={() => setSaleType("detalle")} id="detalle">
+            Al detalle
+          </button>
+          <button onClick={() => setOcultar(true)} id="ocultar">
+            Ocultar
+          </button>
+        </>
+      )}
       {/* PORTADA */}
       <div style={{ position: "relative" }}>
         <img
@@ -131,7 +140,7 @@ function App({ store }) {
           ...styles.prints,
         }}
       >
-        {secciones.map((seccion, i) => (
+        {store.map((seccion, i) => (
           <>
             {/* Barra con titulo */}
             <div style={styles.tituloSeccion} key={i + "titulo"}>
@@ -140,7 +149,11 @@ function App({ store }) {
 
             <div style={styles.contenedorCartas} key={i + "cartas"}>
               {seccion.articulos.map((articulo) => (
-                <Card articulo={articulo} store={store} />
+                <Card
+                  articulo={articulo}
+                  saleType={saleType}
+                  seccion={seccion.nombre}
+                />
               ))}
             </div>
           </>
@@ -150,29 +163,16 @@ function App({ store }) {
   );
 }
 
-let i = 0;
-
-const Card = ({ articulo, store }) => {
-  const [value, setValue] = store;
-  const { saleType } = value;
-
-  React.useEffect(() => {
-    setInterval(() => {
-      setValue({ saleType: i ? "detalle" : "mayor" });
-      i ? i-- : i++;
-    }, 2000);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
+const Card = ({ articulo, saleType, seccion }) => {
   const codigos = articulo.codigos;
 
   return (
     <div style={styles.carta}>
       <div style={styles.cartaHeader}>
         <div style={{ position: "relative" }}>
-          <div style={styles.agotado}> Agotado </div>
+          {articulo.agotado && <div style={styles.agotado}> Agotado </div>}
           <img
-            src={`./assets/${articulo.imagen}`}
+            src={`./assets/${seccion}/${articulo.imagen}`}
             style={styles.image}
             alt={articulo.imagen}
           />
