@@ -5,6 +5,7 @@ import { download, checkImage } from "./utils";
 import _ from "lodash";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { arrayMoveImmutable as arrayMove } from "array-move";
+import SortItemEditTeplate from "./Generator/SortItemEditTemplate";
 
 const styles = {
   seccion: {
@@ -27,6 +28,7 @@ const styles = {
 const Generator = () => {
   const [sections, setSections] = React.useState(null);
   const [sectionName, setSectionName] = React.useState();
+  const [dragEnabled, setDragEnabled] = React.useState(false);
   const fileRef = React.useRef();
 
   React.useEffect(() => {
@@ -180,10 +182,17 @@ const Generator = () => {
         onChange={handleFileUpload}
         type="file"
         ref={fileRef}
+        accept="application/json"
       />
       {/* <button onClick={() => handleSave(sections)}>Guardar</button> */}
       <button onClick={() => download(sections)}>Exportar</button>
       <button onClick={generatePDF}>Generar PDF</button>
+      <button
+        onClick={() => setDragEnabled(!dragEnabled)}
+        style={{ color: dragEnabled ? "black" : "red" }}
+      >
+        Ordenar {!dragEnabled && "- ACTIVO"}
+      </button>
       {sections.map((datos) => {
         return (
           <Seccion
@@ -192,6 +201,7 @@ const Generator = () => {
             onSubmit={handleSectionSubmit}
             onRename={handleRename}
             onDelete={handleRemoveSection}
+            dragEnabled={dragEnabled}
           />
         );
       })}
@@ -199,13 +209,13 @@ const Generator = () => {
   );
 };
 
-const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
+const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
   const [elements, setElements] = React.useState(datos.articulos ?? []);
   const [nombre, setNombre] = React.useState(datos.nombre ?? "");
 
   React.useEffect(() => {
     const body = { articulos: elements, id: datos.id };
-    onSubmit(body);
+    if (!_.isEqual(elements, body)) onSubmit(body);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [elements]);
 
@@ -217,9 +227,11 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
     const index = elements.findIndex((item) => item.id === payload.id);
     const data = [...elements];
     data[index] = payload;
-    setElements(data);
     const body = { articulos: data, id: datos.id };
-    onSubmit(body);
+    if (!_.isEqual(elements, data)) {
+      setElements(data);
+      onSubmit(body);
+    }
   };
 
   const handleDelete = (id) => {
@@ -239,20 +251,17 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
   };
 
   const SortableItem = SortableElement(({ value }) => (
-    <Articulo
-      key={value.id}
-      data={value}
-      onSubmit={handleSubmit}
-      onDelete={handleDelete}
-      seccion={datos.nombre}
-    />
+    <SortItemEditTeplate value={value} key={value.id} />
   ));
 
   const SortableList = SortableContainer(({ items }) => {
     return (
       <tbody>
         {items.map((value, index) => (
-          <SortableItem key={`item-${value}`} index={index} value={value} />
+          <SortableItem
+            index={index}
+            value={{ ...value, seccion: datos.nombre }}
+          />
         ))}
       </tbody>
     );
@@ -268,34 +277,40 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
       />
 
       <table className="table_container">
-        <thead>
-          <th style={{ width: "2%" }}> </th>
-          <th style={{ width: "25%" }}>Nombre Imagen</th>
-          <th style={{ width: "35%" }}>Titulo</th>
-          <th style={{ width: "7%" }}>Precio (Al por mayor) y (Al detalle)</th>
-          <th style={{ width: "13%" }}>Codigos</th>
-          <th style={{ width: "2%" }}>Agotado</th>
-          <th style={{ width: "4%" }}></th>
-        </thead>
+        {dragEnabled && (
+          <thead>
+            <th style={{ width: "2%" }}> </th>
+            <th style={{ width: "25%" }}>Nombre Imagen</th>
+            <th style={{ width: "35%" }}>Titulo</th>
+            <th style={{ width: "7%" }}>
+              Precio (Al por mayor) y (Al detalle)
+            </th>
+            <th style={{ width: "13%" }}>Codigos</th>
+            <th style={{ width: "2%" }}>Agotado</th>
+            <th style={{ width: "4%" }}></th>
+          </thead>
+        )}
 
-        <SortableList
-          items={elements}
-          onSortEnd={onSortEnd}
-          lockAxis="y"
-          pressDelay={100}
-          lockToContainerEdges
-          lockOffset="20%"
-        />
-
-        {/* {elements.map((data) => (
-          <Articulo
-            key={data.id}
-            data={data}
-            onSubmit={handleSubmit}
-            onDelete={handleDelete}
-            seccion={datos.nombre}
+        {!dragEnabled ? (
+          <SortableList
+            items={elements}
+            onSortEnd={onSortEnd}
+            lockAxis="y"
+            lockToContainerEdges
+            lockOffset="20%"
+            useWindowAsScrollContainer
           />
-        ))} */}
+        ) : (
+          elements.map((data) => (
+            <Articulo
+              key={data.id}
+              data={data}
+              onSubmit={handleSubmit}
+              onDelete={handleDelete}
+              seccion={datos.nombre}
+            />
+          ))
+        )}
       </table>
 
       <div>
@@ -311,7 +326,7 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
   );
 };
 
-const Articulo = ({ data, onSubmit, onDelete, seccion }) => {
+const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   const imageInput = React.useState(data.imagen ?? "");
   const tituloInput = React.useState(data.titulo ?? "");
   const precioInput1 = React.useState(data.precio?.detalle ?? "");
@@ -365,19 +380,16 @@ const Articulo = ({ data, onSubmit, onDelete, seccion }) => {
     }
   };
 
-  const handlePreviewImage = () => {
+  const handlePreviewImage = () =>
     window.open(`./assets/${seccion}/${imageInput[0]}`, "_blank");
-  };
 
-  const config = (input, typeValue = "value", saveOnChange = false) => {
-    return {
-      [typeValue]: input[0],
-      onChange: ({ target }) =>
-        handleInput(target[typeValue], input[1], saveOnChange),
-      ...(typeValue === "value" && { onBlur: () => submit(payload()) }),
-      onBlur: (e) => {},
-    };
-  };
+  const config = (input, typeValue = "value", saveOnChange = false) => ({
+    [typeValue]: input[0],
+    onChange: ({ target }) =>
+      handleInput(target[typeValue], input[1], saveOnChange),
+    ...(typeValue === "value" && { onBlur: () => submit(payload()) }),
+    disabled: disabled,
+  });
 
   React.useEffect(() => {
     checkImage(`./assets/${seccion}/${imageInput[0]}`)

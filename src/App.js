@@ -1,5 +1,6 @@
 import React from "react";
 import "./styles.css";
+import NotFoundImage from "./assets/notfound.jpeg";
 
 const styles = {
   app: {
@@ -166,16 +167,19 @@ function App({ store }) {
 const Card = ({ articulo, saleType, seccion }) => {
   const codigos = articulo.codigos;
 
+  const [image, setImage] = React.useState("");
+
+  const tester = new Image();
+  tester.src = `./assets/${seccion}/${articulo.imagen}`;
+  tester.onload = () => setImage(`./assets/${seccion}/${articulo.imagen}`);
+  tester.onerror = (e) => setImage(NotFoundImage);
+
   return (
     <div style={styles.carta}>
       <div style={styles.cartaHeader}>
         <div style={{ position: "relative" }}>
           {articulo.agotado && <div style={styles.agotado}> Agotado </div>}
-          <img
-            src={`./assets/${seccion}/${articulo.imagen}`}
-            style={styles.image}
-            alt={articulo.imagen}
-          />
+          <img src={image} style={styles.image} alt={articulo.imagen} />
         </div>
 
         {!!codigos.length && (
