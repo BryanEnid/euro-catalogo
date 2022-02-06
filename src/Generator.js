@@ -3,6 +3,8 @@ import "./styles/tables.css";
 import uuid from "react-uuid";
 import { download, checkImage } from "./utils";
 import _ from "lodash";
+import { SortableContainer, SortableElement } from "react-sortable-hoc";
+import { arrayMoveImmutable as arrayMove } from "array-move";
 
 const styles = {
   seccion: {
@@ -29,11 +31,25 @@ const Generator = () => {
 
   React.useEffect(() => {
     (async () => {
-      const response = await fetch("http://localhost:9000/load");
-      const data = await response.json();
-      setSections(data);
+      try {
+        const response = await fetch("http://localhost:9000/load");
+        const data = await response.json();
+        setSections(data);
+      } catch (e) {
+        const answer = window.confirm(
+          "ERROR: " + e.message + "\nIntentar recargar nuevamente la pagina?"
+        );
+        if (answer) window.location.reload();
+      }
     })();
   }, []);
+
+  React.useEffect(() => {
+    if (sections) {
+      handleSave(sections);
+      console.log("saved");
+    }
+  }, [sections]);
 
   const handleCreateSection = () => {
     if (sectionName) {
@@ -47,7 +63,6 @@ const Generator = () => {
     }
   };
 
-  // TODO: Ensenar un dialogo para confirmar
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     var reader = new FileReader();
@@ -77,8 +92,8 @@ const Generator = () => {
     }
   };
 
-  const handleSave = (data) => {
-    fetch("http://localhost:9000/save", {
+  const handleSave = async (data) => {
+    return fetch("http://localhost:9000/save", {
       body: JSON.stringify(data),
       method: "POST",
       headers: {
@@ -188,6 +203,12 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
   const [elements, setElements] = React.useState(datos.articulos ?? []);
   const [nombre, setNombre] = React.useState(datos.nombre ?? "");
 
+  React.useEffect(() => {
+    const body = { articulos: elements, id: datos.id };
+    onSubmit(body);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elements]);
+
   const handleNewElement = () => {
     setElements([...elements, { id: uuid() }]);
   };
@@ -213,6 +234,30 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
 
   const handleSectionRename = (e) => onRename(e.target.value, datos.id);
 
+  const onSortEnd = async ({ oldIndex, newIndex }) => {
+    setElements((items) => arrayMove(items, oldIndex, newIndex));
+  };
+
+  const SortableItem = SortableElement(({ value }) => (
+    <Articulo
+      key={value.id}
+      data={value}
+      onSubmit={handleSubmit}
+      onDelete={handleDelete}
+      seccion={datos.nombre}
+    />
+  ));
+
+  const SortableList = SortableContainer(({ items }) => {
+    return (
+      <tbody>
+        {items.map((value, index) => (
+          <SortableItem key={`item-${value}`} index={index} value={value} />
+        ))}
+      </tbody>
+    );
+  });
+
   return (
     <div style={styles.seccion}>
       <input
@@ -224,15 +269,25 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
 
       <table className="table_container">
         <thead>
-          <th style={{ width: "22%" }}>Nombre Imagen</th>
-          <th style={{ width: "38%" }}>Titulo</th>
-          <th style={{ width: "10%" }}>Precio (Al por mayor) y (Al detalle)</th>
-          <th style={{ width: "25%" }}>Codigos</th>
+          <th style={{ width: "2%" }}> </th>
+          <th style={{ width: "25%" }}>Nombre Imagen</th>
+          <th style={{ width: "35%" }}>Titulo</th>
+          <th style={{ width: "7%" }}>Precio (Al por mayor) y (Al detalle)</th>
+          <th style={{ width: "13%" }}>Codigos</th>
           <th style={{ width: "2%" }}>Agotado</th>
-          <th style={{ width: "2%" }}></th>
+          <th style={{ width: "4%" }}></th>
         </thead>
 
-        {elements.map((data) => (
+        <SortableList
+          items={elements}
+          onSortEnd={onSortEnd}
+          lockAxis="y"
+          pressDelay={100}
+          lockToContainerEdges
+          lockOffset="20%"
+        />
+
+        {/* {elements.map((data) => (
           <Articulo
             key={data.id}
             data={data}
@@ -240,7 +295,7 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete }) => {
             onDelete={handleDelete}
             seccion={datos.nombre}
           />
-        ))}
+        ))} */}
       </table>
 
       <div>
@@ -320,6 +375,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion }) => {
       onChange: ({ target }) =>
         handleInput(target[typeValue], input[1], saveOnChange),
       ...(typeValue === "value" && { onBlur: () => submit(payload()) }),
+      onBlur: (e) => {},
     };
   };
 
@@ -336,71 +392,78 @@ const Articulo = ({ data, onSubmit, onDelete, seccion }) => {
   }, []);
 
   return (
-    <>
-      <tr>
-        <td>
-          <input type="text" {...config(imageInput)} />
-          {imageExists !== null && (
-            <div
-              className="icon"
-              style={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              {imageExists ? (
-                <>
-                  <span style={{ color: "green" }}>&#10003;</span>
-                  <button onClick={handlePreviewImage}>ver imagen</button>
-                </>
-              ) : (
-                <span style={{ color: "red" }}>&#10005;</span>
-              )}
-            </div>
-          )}
-        </td>
-        <td>
-          <input type="text" {...config(tituloInput)} />
-        </td>
+    <tr>
+      <td></td>
 
-        <td>
-          <tr>
-            <td>
-              <input type="text" {...config(precioInput1)} />
-            </td>
-            <td>
-              <input type="text" {...config(precioInput2)} />
-            </td>
-          </tr>
-        </td>
+      <td>
+        <input type="text" {...config(imageInput)} />
+        {imageExists !== null && (
+          <div
+            className="icon"
+            style={{
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {imageExists ? (
+              <>
+                <span style={{ color: "green" }}>&#10003;</span>
+                <button onClick={handlePreviewImage}>ver imagen</button>
+              </>
+            ) : (
+              <span style={{ color: "red" }}>&#10005;</span>
+            )}
+          </div>
+        )}
+      </td>
+      <td>
+        <input type="text" {...config(tituloInput)} />
+      </td>
 
-        <table>
-          <tr>
-            <td>
-              <input type="text" {...config(codigoInput1)} />
-            </td>
-            <td>
-              <input type="text" {...config(codigoInput2)} />
-            </td>
-            <td>
-              <input type="text" {...config(codigoInput3)} />
-            </td>
-          </tr>
-        </table>
+      <td>
+        <tr>
+          <td>
+            <input type="text" {...config(precioInput1)} />
+          </td>
+          <td>
+            <input type="text" {...config(precioInput2)} />
+          </td>
+        </tr>
+      </td>
 
-        <td>
-          <input
-            type="checkbox"
-            {...config(agotadoInput, "checked", "agotado")}
-          />
-        </td>
+      <td>
+        <tr>
+          <td>
+            <input type="text" {...config(codigoInput1)} />
+          </td>
+          <td>
+            <input type="text" {...config(codigoInput2)} />
+          </td>
+          <td>
+            <input type="text" {...config(codigoInput3)} />
+          </td>
+        </tr>
+      </td>
 
-        <td>
-          <button onClick={handleRemoveItem}>borrar</button>
-        </td>
-      </tr>
-    </>
+      <td>
+        <input
+          type="checkbox"
+          {...config(agotadoInput, "checked", "agotado")}
+        />
+      </td>
+
+      <span
+        style={{
+          display: "flex",
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <button onClick={handleRemoveItem}>borrar</button>
+      </span>
+    </tr>
   );
 };
 
