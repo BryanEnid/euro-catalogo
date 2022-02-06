@@ -36,6 +36,7 @@ const SortItemEditTeplate = ({ value }) => {
     const tester = new Image();
     tester.src = `./assets/${value.seccion}/${value.imagen}`;
     tester.onerror = () => setImage(NotFoundImage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
