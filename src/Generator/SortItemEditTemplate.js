@@ -20,13 +20,6 @@ const styles = {
   },
 };
 
-// const preloadImage = (value) => {
-//   let
-//   const tester = new Image();
-//     tester.src = `./assets/${value.seccion}/${value.imagen}`;
-//     tester.onload = () => setImage(`./assets/${value.seccion}/${value.imagen}`);
-// }
-
 const SortItemEditTeplate = ({ value }) => {
   const [image, setImage] = React.useState(
     `./assets/${value.seccion}/${value.imagen}`

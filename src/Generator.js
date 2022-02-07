@@ -6,6 +6,7 @@ import _ from "lodash";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { arrayMoveImmutable as arrayMove } from "array-move";
 import SortItemEditTeplate from "./Generator/SortItemEditTemplate";
+import { CircularProgress } from "@mui/material";
 
 const styles = {
   seccion: {
@@ -29,11 +30,13 @@ const Generator = () => {
   const [sections, setSections] = React.useState(null);
   const [sectionName, setSectionName] = React.useState();
   const [dragEnabled, setDragEnabled] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const fileRef = React.useRef();
 
   React.useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const response = await fetch("http://localhost:9000/load");
         const data = await response.json();
         setSections(data);
@@ -42,6 +45,8 @@ const Generator = () => {
           "ERROR: " + e.message + "\nIntentar recargar nuevamente la pagina?"
         );
         if (answer) window.location.reload();
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -95,13 +100,16 @@ const Generator = () => {
   };
 
   const handleSave = async (data) => {
+    setLoading(true);
     return fetch("http://localhost:9000/save", {
       body: JSON.stringify(data),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    }).catch(console.error);
+    })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   };
 
   // TODO: add recover deleted section
@@ -145,6 +153,7 @@ const Generator = () => {
       }),
     ];
 
+    setLoading(true);
     const responses = await Promise.all(promises);
 
     for await (const response of responses) {
@@ -152,6 +161,7 @@ const Generator = () => {
       const file = URL.createObjectURL(blob);
       window.open(file);
     }
+    setLoading(false);
   };
 
   // Render "Upload File"
@@ -162,6 +172,24 @@ const Generator = () => {
         <button onClick={() => setSections([])}>
           Generar nuevo spreadsheet
         </button>
+
+        {loading && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 10,
+            }}
+          >
+            <CircularProgress color="primary" size={60} disableShrink />
+          </div>
+        )}
       </>
     );
   }
@@ -189,9 +217,9 @@ const Generator = () => {
       <button onClick={generatePDF}>Generar PDF</button>
       <button
         onClick={() => setDragEnabled(!dragEnabled)}
-        style={{ color: dragEnabled ? "black" : "red" }}
+        style={{ color: !dragEnabled ? "black" : "red" }}
       >
-        Ordenar {!dragEnabled && "- ACTIVO"}
+        Ordenar {dragEnabled && "- ACTIVO"}
       </button>
       {sections.map((datos) => {
         return (
@@ -277,7 +305,7 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
       />
 
       <table className="table_container">
-        {dragEnabled && (
+        {!dragEnabled && (
           <thead>
             <th style={{ width: "2%" }}> </th>
             <th style={{ width: "25%" }}>Nombre Imagen</th>
@@ -291,7 +319,7 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
           </thead>
         )}
 
-        {!dragEnabled ? (
+        {dragEnabled ? (
           <SortableList
             items={elements}
             onSortEnd={onSortEnd}
@@ -329,8 +357,8 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
 const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   const imageInput = React.useState(data.imagen ?? "");
   const tituloInput = React.useState(data.titulo ?? "");
-  const precioInput1 = React.useState(data.precio?.detalle ?? "");
-  const precioInput2 = React.useState(data.precio?.mayor ?? "");
+  const precioInput1 = React.useState(data.precio?.mayor ?? "");
+  const precioInput2 = React.useState(data.precio?.detalle ?? "");
   const codigoInput1 = React.useState(data.codigos?.[0] ?? "");
   const codigoInput2 = React.useState(data.codigos?.[1] ?? "");
   const codigoInput3 = React.useState(data.codigos?.[2] ?? "");
@@ -338,7 +366,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   const [imageExists, setImageExists] = React.useState(null);
 
   const payload = () => {
-    const precios = { detalle: precioInput1[0], mayor: precioInput2[0] };
+    const precios = { detalle: precioInput2[0], mayor: precioInput1[0] };
 
     // Codigo
     const validacion = [codigoInput1[0], codigoInput2[0], codigoInput3[0]];

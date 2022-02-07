@@ -2,6 +2,10 @@ import React from "react";
 import "./styles.css";
 import NotFoundImage from "./assets/notfound.jpeg";
 
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+}
+
 const styles = {
   app: {
     fontFamily: "ReadexPro",
@@ -70,13 +74,16 @@ const styles = {
   },
   articuloTitulo: {
     textTransform: "uppercase",
-    fontSize: 25,
+    fontSize: 22,
+    fontWeight: "bold",
     margin: "5px 0",
     color: "#2C60DE",
   },
   articuloPrecio: {
     fontSize: 20,
+    fontWeight: "bold",
     color: "#2C9735",
+    marginBottom: 10,
   },
   precio: {
     backgroundColor: "#2C9736",
@@ -113,6 +120,9 @@ function App({ store }) {
           <button onClick={() => setSaleType("detalle")} id="detalle">
             Al detalle
           </button>
+          <button onClick={() => setSaleType("todos")} id="detalle">
+            MOSTRAR TODOS LOS PRECIOS
+          </button>
           <button onClick={() => setOcultar(true)} id="ocultar">
             Ocultar
           </button>
@@ -126,7 +136,7 @@ function App({ store }) {
           style={{ width: "100%" }}
         />
         <div style={styles.tituloCover}>
-          <div>Catalogo de productos</div>
+          <div>CAT&#193;LOGO DE PRODUCTOS</div>
           {saleType === "mayor" && (
             <div style={{ fontSize: 50, color: "#1BD934" }}>Al por mayor</div>
           )}
@@ -168,18 +178,41 @@ const Card = ({ articulo, saleType, seccion }) => {
   const codigos = articulo.codigos;
 
   const [image, setImage] = React.useState("");
+  const [noImage, setNoImage] = React.useState(false);
 
   const tester = new Image();
   tester.src = `./assets/${seccion}/${articulo.imagen}`;
   tester.onload = () => setImage(`./assets/${seccion}/${articulo.imagen}`);
-  tester.onerror = (e) => setImage(NotFoundImage);
+  tester.onerror = (e) => {
+    setNoImage(true);
+    setImage(NotFoundImage);
+  };
 
   return (
-    <div style={styles.carta}>
+    <div
+      style={{
+        ...styles.carta,
+        ...(noImage && {
+          background: "#FFD2AC",
+          border: "4px solid #FF7500",
+        }),
+      }}
+    >
+      <div style={{ textAlign: "right", color: "#bbb" }}>{seccion}</div>
       <div style={styles.cartaHeader}>
         <div style={{ position: "relative" }}>
           {articulo.agotado && <div style={styles.agotado}> Agotado </div>}
-          <img src={image} style={styles.image} alt={articulo.imagen} />
+
+          <img
+            src={image}
+            style={{
+              ...styles.image,
+              ...(noImage && {
+                border: "4px solid #FF7500",
+              }),
+            }}
+            alt={articulo.imagen}
+          />
         </div>
 
         {!!codigos.length && (
@@ -213,23 +246,64 @@ const Card = ({ articulo, saleType, seccion }) => {
           </div>
         )}
       </div>
+
       <div style={styles.articuloTitulo}>{articulo.titulo}</div>
-      <div
-        style={{
-          ...styles.articuloPrecio,
-          ...(saleType === "detalle" && { color: "#2C60DE" }),
-        }}
-      >
-        <span> PRECIO </span>
-        <span
+
+      {saleType === "todos" ? (
+        <>
+          <div
+            style={{
+              ...styles.articuloPrecio,
+              color: "#2C60DE",
+            }}
+          >
+            <span> AL DETALLE </span>
+            <span
+              style={{
+                ...styles.precio,
+                backgroundColor: "#2C60DE",
+              }}
+            >
+              ${numberWithCommas(articulo.precio["detalle"].trim())}
+              <span style={{ fontSize: 14, opacity: 1 }}>.00</span>
+            </span>
+          </div>
+
+          <div
+            style={{
+              ...styles.articuloPrecio,
+            }}
+          >
+            <span> AL POR MAYOR </span>
+            <span
+              style={{
+                ...styles.precio,
+              }}
+            >
+              ${numberWithCommas(articulo.precio["mayor"].trim())}
+              <span style={{ fontSize: 14, opacity: 1 }}>.00</span>
+            </span>
+          </div>
+        </>
+      ) : (
+        <div
           style={{
-            ...styles.precio,
-            ...(saleType === "detalle" && { backgroundColor: "#2C60DE" }),
+            ...styles.articuloPrecio,
+            ...(saleType === "detalle" && { color: "#2C60DE" }),
           }}
         >
-          ${articulo.precio[saleType]}
-        </span>
-      </div>
+          <span> PRECIO </span>
+          <span
+            style={{
+              ...styles.precio,
+              ...(saleType === "detalle" && { backgroundColor: "#2C60DE" }),
+            }}
+          >
+            ${numberWithCommas(articulo.precio[saleType].trim())}
+            <span style={{ fontSize: 14, opacity: 1 }}>.00</span>
+          </span>
+        </div>
+      )}
     </div>
   );
 };

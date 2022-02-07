@@ -8,4 +8,17 @@ html {
 @font-face {
   font-family: "ReadexPro";
   src: url("./assets/ReadexPro-Regular.ttf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("./assets/ReadexPro-Bold.ttf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("./assets/ReadexPro-Light.ttf");
+  font-weight: 300;
 }
