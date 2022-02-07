@@ -7,13 +7,21 @@ const address = "http://localhost:3000";
 const width = 720;
 
 // Config
-const fileName = "output.pdf";
 const path = "./";
 
 exports.generatePDF = async (req, res) => {
+  const fileName = req.body.salesType + ".pdf";
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--disable-gpu", "--full-memory-crash-report", "--unlimited-storage", "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", `--window-size=${width},${1000}`],
+    args: [
+      "--disable-gpu",
+      "--full-memory-crash-report",
+      "--unlimited-storage",
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      `--window-size=${width},${1000}`,
+    ],
     defaultViewport: {
       width: width,
       height: 1000,

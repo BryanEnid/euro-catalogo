@@ -120,7 +120,7 @@ function App({ store }) {
           <button onClick={() => setSaleType("detalle")} id="detalle">
             Al detalle
           </button>
-          <button onClick={() => setSaleType("todos")} id="detalle">
+          <button onClick={() => setSaleType("todos")}>
             MOSTRAR TODOS LOS PRECIOS
           </button>
           <button onClick={() => setOcultar(true)} id="ocultar">

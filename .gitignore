@@ -24,3 +24,4 @@ yarn-error.log*
 db.json
 database.json
 /public/assets/**/*
+*.pdf

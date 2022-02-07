@@ -153,7 +153,6 @@ const Generator = () => {
       }),
     ];
 
-    setLoading(true);
     const responses = await Promise.all(promises);
 
     for await (const response of responses) {
@@ -161,7 +160,6 @@ const Generator = () => {
       const file = URL.createObjectURL(blob);
       window.open(file);
     }
-    setLoading(false);
   };
 
   // Render "Upload File"
