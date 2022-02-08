@@ -78,7 +78,7 @@ const styles = {
     fontSize: 22,
     fontWeight: "bold",
     margin: "5px 0",
-    color: "#2C60DE",
+    color: "#002a91",
   },
   articuloPrecio: {
     fontSize: 20,
@@ -99,7 +99,8 @@ const styles = {
     borderRadius: 20,
     transform: "rotate(-25deg)",
     background: "white",
-    opacity: 0.7,
+    // opacity: 0.7,
+    fontWeight: "bold",
 
     position: "absolute",
     left: -30,
@@ -139,7 +140,7 @@ function App({ store }) {
         <div style={styles.tituloCover}>
           <div>CAT&#193;LOGO DE PRODUCTOS</div>
           {saleType === "mayor" && (
-            <div style={{ fontSize: 50, color: "#1BD934" }}>Al por mayor</div>
+            <div style={{ fontSize: 50, color: "#1BD934" }}>AL POR MAYOR</div>
           )}
         </div>
       </div>
@@ -219,7 +220,7 @@ const Card = ({ articulo, saleType, seccion }) => {
         {!!codigos.length && (
           <div style={styles.codigoContainer}>
             {codigos?.map((item, index) => {
-              const color = ["#2C9FDE", "#2C60DE", "#662CDE"][index];
+              const color = ["#00a5ff", "#00e1ff", "#00ffb3"][index];
               const [codigo, nombre] = item.split(";");
               return (
                 <>
