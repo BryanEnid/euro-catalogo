@@ -151,6 +151,13 @@ const Generator = () => {
           "Content-Type": "application/json",
         },
       }),
+      fetch("http://localhost:9000/generatePDF", {
+        method: "POST",
+        body: JSON.stringify({ salesType: "todos" }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
     ];
 
     const responses = await Promise.all(promises);

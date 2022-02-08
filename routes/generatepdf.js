@@ -34,6 +34,7 @@ exports.generatePDF = async (req, res) => {
 
     if (req.body.salesType === "detalle") await page.click("#detalle");
     if (req.body.salesType === "mayor") await page.click("#mayor");
+    if (req.body.salesType === "todos") await page.click("#todos");
     await page.click("#ocultar");
 
     // Page dimension

@@ -121,7 +121,7 @@ function App({ store }) {
           <button onClick={() => setSaleType("detalle")} id="detalle">
             Al detalle
           </button>
-          <button onClick={() => setSaleType("todos")}>
+          <button onClick={() => setSaleType("todos")} id="todos">
             MOSTRAR TODOS LOS PRECIOS
           </button>
           <button onClick={() => setOcultar(true)} id="ocultar">
@@ -202,7 +202,7 @@ const Card = ({ articulo, saleType, seccion }) => {
       <div style={{ textAlign: "right", color: "#bbb" }}>{seccion}</div>
       <div style={styles.cartaHeader}>
         <div style={{ position: "relative" }}>
-          {articulo.agotado && <div style={styles.agotado}> Agotado </div>}
+          {articulo.agotado && <div style={styles.agotado}> AGOTADO </div>}
 
           <img
             src={image}
