@@ -1,0 +1,36 @@
+body,
+html {
+  padding: 0;
+  margin: 0;
+  background-color: #0b1118;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("../../assets/ReadexPro-Regular.ttf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("../../assets/ReadexPro-Bold.ttf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "ReadexPro";
+  src: url("../../assets/ReadexPro-Light.ttf");
+  font-weight: 300;
+}
+
+@media print {
+  .cover {
+    display: none;
+  }
+
+  .contenedorCartas {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 30px;
+  }
+}

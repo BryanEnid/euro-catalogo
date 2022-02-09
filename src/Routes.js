@@ -4,8 +4,10 @@ import {
   Routes as Switch,
   Route,
 } from "react-router-dom";
-import App from "./App";
-import Generator from "./Generator";
+
+import App from "./Screens/Home/Home";
+import Generator from "./Screens/Generator/Generator";
+import Print from "./Screens/Print/print";
 
 export default function Routes() {
   const [store, setStore] = React.useState([]);
@@ -23,6 +25,7 @@ export default function Routes() {
       <Switch>
         <Route exact path="/" element={<App store={store} />} />
         <Route exact path="/Generator" element={<Generator />} />
+        <Route exact path="/Print" element={<Print store={store} />} />
       </Switch>
     </Router>
   );

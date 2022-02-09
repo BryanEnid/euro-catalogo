@@ -1,11 +1,11 @@
 import React from "react";
-import "./styles/tables.css";
+import "./tables.css";
 import uuid from "react-uuid";
-import { download, checkImage } from "./utils";
+import { download, checkImage } from "../../utils";
 import _ from "lodash";
 import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { arrayMoveImmutable as arrayMove } from "array-move";
-import SortItemEditTeplate from "./Generator/SortItemEditTemplate";
+import SortItemEditTeplate from "./SortItemEditTemplate";
 import { CircularProgress } from "@mui/material";
 
 const styles = {
@@ -390,7 +390,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   };
 
   const submit = (payload) => {
-    checkImage(`./assets/${seccion}/${payload.imagen}`)
+    checkImage(`../../assets/${seccion}/${payload.imagen}`)
       .then(({ exists }) => {
         setImageExists(exists);
         onSubmit(payload);
@@ -414,7 +414,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   };
 
   const handlePreviewImage = () =>
-    window.open(`./assets/${seccion}/${imageInput[0]}`, "_blank");
+    window.open(`../../assets/${seccion}/${imageInput[0]}`, "_blank");
 
   const config = (input, typeValue = "value", saveOnChange = false) => ({
     [typeValue]: input[0],
@@ -425,7 +425,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   });
 
   React.useEffect(() => {
-    checkImage(`./assets/${seccion}/${imageInput[0]}`)
+    checkImage(`../../assets/${seccion}/${imageInput[0]}`)
       .then(({ exists }) => {
         setImageExists(exists);
       })

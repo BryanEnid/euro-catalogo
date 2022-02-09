@@ -1,5 +1,5 @@
 import React from "react";
-import NotFoundImage from "../assets/notfound.jpeg";
+import NotFoundImage from "../../assets/notfound.jpeg";
 
 const styles = {
   image: {
