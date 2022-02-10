@@ -1,5 +1,6 @@
 import React from "react";
 
+import Stack from "@mui/material/Stack";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 
@@ -8,7 +9,6 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 
 export default function UI({ value, setter }) {
@@ -25,9 +25,10 @@ export default function UI({ value, setter }) {
         "@media print": { display: "none" },
         padding: 1,
         position: "fixed",
+        zIndex: 2,
       }}
     >
-      <Grid item>
+      <Stack direction="column" spacing={2}>
         <ToggleButtonGroup
           orientation="vertical"
           value={value}
@@ -47,11 +48,21 @@ export default function UI({ value, setter }) {
           <ToggleButton value="todos" aria-label="right aligned">
             <Typography>A</Typography>
           </ToggleButton>
-          <Button value="justify" aria-label="justified" onClick={window.print}>
-            <PrintIcon />
-          </Button>
         </ToggleButtonGroup>
-      </Grid>
+
+        <ToggleButtonGroup
+          orientation="vertical"
+          exclusive
+          aria-label="text alignment"
+          size={"small"}
+          color="primary"
+          sx={{ background: "white" }}
+        >
+          <ToggleButton onClick={window.print}>
+            <PrintIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Stack>
     </Grid>
   );
 }

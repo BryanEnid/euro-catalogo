@@ -67,6 +67,7 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
         px: 3,
         py: 1,
         WebkitFilter: "drop-shadow(0px 0px 20px #ccc)",
+        zIndex: 1,
         ...sx,
         ...(data.suppress && { opacity: 0 }),
       }}
