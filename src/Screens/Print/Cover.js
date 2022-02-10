@@ -11,6 +11,7 @@ export default function Cover({ salesType }) {
 
   return (
     <Grid
+      item
       xs={12}
       sx={{
         pageBreakAfter: "always",

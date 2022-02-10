@@ -1,7 +1,6 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import { Typography, Divider } from "@mui/material";
 import NotFoundImage from "../../assets/notfound.jpeg";
 import { numberWithCommas } from "../../utils";
@@ -11,18 +10,20 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
   const [image, setImage] = React.useState(
     `./assets/${seccion}/${data.imagen}`
   );
-  const [noImage, setNoImage] = React.useState(false);
+  const [, setNoImage] = React.useState(false);
 
   const handleImageError = (e) => {
     setNoImage(true);
     setImage(NotFoundImage);
   };
 
-  const SalesTypeText = ({ salesType }) => {
-    const text = Object({
+  const SalesTypeText = ({ salesType, suppress }) => {
+    let text = Object({
       mayor: "Al por mayor",
       detalle: "Al detalle",
     })[salesType];
+
+    if (suppress) text = "Precio";
 
     const color = Object({
       mayor: "primary",
@@ -42,7 +43,7 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
             fontWeight: 600,
           }}
         >
-          ${numberWithCommas(data.precio.mayor)}
+          ${numberWithCommas(data.precio[salesType])}
           <Typography
             component="span"
             sx={{ fontSize: theme.typography.body1.fontSize / 1.5 }}
@@ -55,10 +56,9 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
   };
 
   return (
-    <Paper
+    <Grid
       item
       xs={12}
-      elevation={10}
       sx={{
         background: "white",
         borderRadius: "30px",
@@ -66,7 +66,9 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
         flexDirection: "column",
         px: 3,
         py: 1,
+        WebkitFilter: "drop-shadow(0px 0px 20px #ccc)",
         ...sx,
+        ...(data.suppress && { opacity: 0 }),
       }}
     >
       <Grid container direction="row" sx={{ flexGrow: 4 }}>
@@ -114,6 +116,7 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
             const color = [blue, "#4cc8d3", green][index];
             return (
               <Box
+                key={`${nombre}-${codigo}`}
                 sx={{
                   width: "100%",
                   background: color,
@@ -142,8 +145,12 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
         </Box>
 
         <Box>
-          {salesType === "mayor" && <SalesTypeText salesType="mayor" />}
-          {salesType === "detalle" && <SalesTypeText salesType="detalle" />}
+          {salesType === "mayor" && (
+            <SalesTypeText salesType="mayor" suppress />
+          )}
+          {salesType === "detalle" && (
+            <SalesTypeText salesType="detalle" suppress />
+          )}
           {salesType === "todos" && (
             <>
               <SalesTypeText salesType="mayor" />
@@ -152,6 +159,6 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
           )}
         </Box>
       </Box>
-    </Paper>
+    </Grid>
   );
 }

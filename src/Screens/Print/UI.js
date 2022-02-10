@@ -8,6 +8,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 
 import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 
 export default function UI({ value, setter }) {
@@ -17,8 +18,8 @@ export default function UI({ value, setter }) {
 
   return (
     <Grid
+      item
       xs={12}
-      container
       justifyContent="flex-start"
       sx={{
         "@media print": { display: "none" },
@@ -46,13 +47,9 @@ export default function UI({ value, setter }) {
           <ToggleButton value="todos" aria-label="right aligned">
             <Typography>A</Typography>
           </ToggleButton>
-          <ToggleButton
-            value="justify"
-            aria-label="justified"
-            onClick={window.print}
-          >
+          <Button value="justify" aria-label="justified" onClick={window.print}>
             <PrintIcon />
-          </ToggleButton>
+          </Button>
         </ToggleButtonGroup>
       </Grid>
     </Grid>
