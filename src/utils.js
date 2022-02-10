@@ -38,9 +38,16 @@ export function numberWithCommas(x) {
 }
 
 export function breakArrayIntoGroups(data, maxPerGroup) {
-  var groups = [];
+  const groups = [];
   for (var index = 0; index < data.length; index += maxPerGroup) {
-    groups.push(data.slice(index, index + maxPerGroup));
+    let group = data.slice(index, index + maxPerGroup);
+    const remainder = maxPerGroup - group.length;
+    if (remainder)
+      group = [
+        ...group,
+        ...Array(remainder).fill({ ...data[0], suppress: true }),
+      ];
+    groups.push(group);
   }
   return groups;
 }

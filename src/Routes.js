@@ -1,3 +1,4 @@
+// Dependecies
 import React from "react";
 import {
   BrowserRouter as Router,
@@ -5,9 +6,10 @@ import {
   Route,
 } from "react-router-dom";
 
-import App from "./Screens/Home/Home";
+// Components
+import Home from "./Screens/Home/Home";
 import Generator from "./Screens/Generator/Generator";
-import Print from "./Screens/Print/print";
+import Print from "./Screens/Print/Print";
 
 export default function Routes() {
   const [store, setStore] = React.useState([]);
@@ -23,7 +25,7 @@ export default function Routes() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" element={<App store={store} />} />
+        <Route exact path="/" element={<Home store={store} />} />
         <Route exact path="/Generator" element={<Generator />} />
         <Route exact path="/Print" element={<Print store={store} />} />
       </Switch>
