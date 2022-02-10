@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles.css";
-import NotFoundImage from "./assets/notfound.jpeg";
+import NotFoundImage from "../../assets/notfound.jpeg";
 
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
