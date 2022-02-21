@@ -6,7 +6,7 @@ import NotFoundImage from "../../assets/notfound.jpeg";
 import { numberWithCommas } from "../../utils";
 import { theme } from "../../theme";
 
-export default function Card({ data, sx, seccion, salesType = "todos" }) {
+export default function Card({ data, sx, seccion, salesType, pdfType }) {
   const [image, setImage] = React.useState(
     `./assets/${seccion}/${data.imagen}`
   );
@@ -66,7 +66,8 @@ export default function Card({ data, sx, seccion, salesType = "todos" }) {
         flexDirection: "column",
         px: 3,
         py: 1,
-        WebkitFilter: "drop-shadow(0px 0px 20px #ccc)",
+        // WebkitFilter: pdfType === "mobile" && "drop-shadow(0px 0px 20px #333)",
+        ...(pdfType === "print" && { border: "1px solid #999" }),
         zIndex: 1,
         ...sx,
         ...(data.suppress && { opacity: 0 }),

@@ -1,6 +1,7 @@
 import React from "react";
 import { breakArrayIntoGroups } from "../../utils";
 import { Typography, Grid, Box } from "@mui/material";
+import { isArray } from "lodash";
 
 import { theme } from "../../theme";
 import Cover from "./Cover";
@@ -9,12 +10,11 @@ import UI from "./UI";
 
 export default function Print({ store }) {
   const [salesType, setSalesType] = React.useState("todos");
-  // const [ocultar, setOcultar] = React.useState(false);
-
+  const [pdfType, setPDFType] = React.useState("print");
   const [sections, setSections] = React.useState([]);
 
   React.useEffect(() => {
-    if (store.length) {
+    if (store.length && pdfType === "print") {
       const data = store.map((item) => {
         const groups = breakArrayIntoGroups(item.articulos, 6);
         return {
@@ -22,77 +22,193 @@ export default function Print({ store }) {
           list: groups,
         };
       });
-
+      setSections(data);
+    } else if (store.length) {
+      const data = store.map((item) => {
+        return {
+          section: item.nombre,
+          list: item.articulos,
+          id: item.id,
+        };
+      });
       setSections(data);
     }
-  }, [store]);
+  }, [store, pdfType]);
 
-  return (
-    <>
-      <UI value={salesType} setter={setSalesType} />
+  const handleNewSections = (value, type) => {
+    console.log(value, type);
+  };
 
-      <Cover salesType={salesType} />
+  if (sections.length) {
+    return (
+      <Box
+        sx={{
+          background:
+            pdfType === "mobile" &&
+            "linear-gradient(180deg, #000208 0%, #093793 100%)",
+        }}
+      >
+        <UI
+          values={{ print: salesType, pdf: pdfType }}
+          setters={{ print: setSalesType, pdf: setPDFType }}
+          onPDFTypeChange={handleNewSections}
+        />
 
-      {sections.map((sectionGroup, i) =>
-        sectionGroup.list.map((item) => {
-          return (
-            <Grid
-              key={`${sectionGroup.section}-${i}-${item[0].id}`}
-              container
-              sx={{
-                maxWidth: 720,
-                pageBreakAfter: "always",
-                height: "100vh",
-                display: "flex",
-                margin: "0 auto",
-                py: 1,
-              }}
-              flexDirection="column"
-            >
-              {/* HEADER */}
-              <Grid
-                container
-                sx={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-              >
-                <Box
-                  sx={{
-                    background: theme.palette.primary.main,
-                    width: "100%",
-                    mx: 1,
-                    mb: 1,
-                    p: 1,
-                    borderRadius: 3,
-                  }}
-                >
-                  <Typography variant="body1" color="white">
-                    {sectionGroup.section}
-                  </Typography>
-                </Box>
-              </Grid>
-              {/* ITEMS */}
-              <Grid container sx={{ flex: 50 }}>
-                <Grid
-                  container
-                  gap={1}
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(2, 1fr)",
-                  }}
-                >
-                  {item.map((data, i) => (
-                    <Card
-                      salesType={salesType}
-                      data={data}
-                      seccion={sectionGroup.section}
-                      key={data.suppress ? data.id + i : data.id}
-                    />
-                  ))}
-                </Grid>
-              </Grid>
-            </Grid>
-          );
-        })
-      )}
-    </>
-  );
+        <Cover salesType={salesType} />
+
+        {pdfType === "print" && isArray(sections[0].list?.[0]) ? (
+          <PrintVersion
+            sections={sections}
+            salesType={salesType}
+            pdfType={pdfType}
+          />
+        ) : (
+          pdfType === "mobile" &&
+          !isArray(sections[0].list?.[0]) && (
+            <MobileVersion
+              sections={sections}
+              salesType={salesType}
+              pdfType={pdfType}
+            />
+          )
+        )}
+      </Box>
+    );
+  } else {
+    return <></>;
+  }
 }
+
+const PrintVersion = ({ sections, salesType, pdfType }) => {
+  return sections.map((sectionGroup, i) =>
+    sectionGroup.list.map((item) => {
+      return (
+        <Grid
+          key={`${sectionGroup.section}-${i}-${item[0].id}`}
+          container
+          sx={{
+            maxWidth: 720,
+            pageBreakAfter: "always",
+            height: "100vh",
+            display: "flex",
+            margin: "0 auto",
+            py: 1,
+            px: 1,
+          }}
+          flexDirection="column"
+        >
+          {/* HEADER */}
+          <Grid
+            container
+            sx={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Box
+              sx={{
+                background: theme.palette.primary.main,
+                width: "100%",
+                mx: 1,
+                mb: 1,
+                p: 1,
+                borderRadius: 3,
+              }}
+            >
+              <Typography variant="body1" color="white">
+                {sectionGroup.section}
+              </Typography>
+            </Box>
+          </Grid>
+          {/* ITEMS */}
+          <Grid container sx={{ flex: 50 }}>
+            <Grid
+              container
+              gap={1}
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2, 1fr)",
+              }}
+            >
+              {item.map((data, i) => (
+                <Card
+                  salesType={salesType}
+                  data={data}
+                  seccion={sectionGroup.section}
+                  key={data.suppress ? data.id + i : data.id}
+                  pdfType={pdfType}
+                />
+              ))}
+            </Grid>
+          </Grid>
+        </Grid>
+      );
+    })
+  );
+};
+
+const MobileVersion = ({ sections, salesType, pdfType }) => {
+  return sections?.map(
+    (sectionGroup, i) => (
+      // sectionGroup.list.map((item) => {
+
+      <Grid
+        key={sectionGroup.id}
+        container
+        sx={{
+          maxWidth: 720,
+          // pageBreakAfter: "always",
+          // height: "100vh",
+          display: "flex",
+          margin: "0 auto",
+          py: 1,
+        }}
+        flexDirection="column"
+      >
+        {/* HEADER */}
+        <Grid
+          container
+          sx={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Box
+            sx={{
+              background: theme.palette.primary.main,
+              width: "100%",
+              mx: 1,
+              mb: 1,
+              p: 1,
+              borderRadius: 3,
+            }}
+          >
+            <Typography variant="body1" color="white">
+              {sectionGroup.section}
+            </Typography>
+          </Box>
+        </Grid>
+        {/* ITEMS */}
+        <Grid container sx={{ flex: 50 }}>
+          <Grid
+            container
+            gap={1}
+            sx={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+            }}
+          >
+            {sectionGroup?.list?.map((data, i) => {
+              if (!isArray(data)) {
+                return (
+                  <Card
+                    salesType={salesType}
+                    data={data}
+                    seccion={sectionGroup.section}
+                    key={data.suppress ? data.id + i : data.id}
+                    pdfType={pdfType}
+                  />
+                );
+              }
+            })}
+          </Grid>
+        </Grid>
+      </Grid>
+    )
+    // })
+  );
+};

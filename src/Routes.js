@@ -25,9 +25,9 @@ export default function Routes() {
   return (
     <Router>
       <Switch>
-        <Route exact path="/" element={<Home store={store} />} />
+        {/* <Route exact path="/" element={<Home store={store} />} /> */}
         <Route exact path="/Generator" element={<Generator />} />
-        <Route exact path="/Print" element={<Print store={store} />} />
+        <Route exact path="/" element={<Print store={store} />} />
       </Switch>
     </Router>
   );
