@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 
 // Components
-import Home from "./Screens/Home/Home";
 import Generator from "./Screens/Generator/Generator";
 import Print from "./Screens/Print/Print";
 
@@ -25,7 +24,6 @@ export default function Routes() {
   return (
     <Router>
       <Switch>
-        {/* <Route exact path="/" element={<Home store={store} />} /> */}
         <Route exact path="/Generator" element={<Generator />} />
         <Route exact path="/" element={<Print store={store} />} />
       </Switch>

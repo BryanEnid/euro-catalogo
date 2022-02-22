@@ -38,6 +38,7 @@ export default function Print({ store }) {
       });
       setSections(data);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [store]);
 
   const handleNewSections = (value, type) => {
@@ -217,6 +218,7 @@ const MobileVersion = ({ sections, salesType, pdfType }) => {
               gridTemplateColumns: "repeat(2, 1fr)",
             }}
           >
+            {/* eslint-disable-next-line array-callback-return */}
             {sectionGroup?.list?.map((data, i) => {
               if (!isArray(data)) {
                 return (

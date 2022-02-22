@@ -44,18 +44,19 @@ export default function UI({ values, onPDFTypeChange }) {
       localStorage.setItem("offset", type);
       return;
     }
-    try {
-      const response = await fetch("http://localhost:9000/generatePDF", {
-        body: JSON.stringify({ type, offset }),
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
+    if (type) {
+      try {
+        const response = await fetch("http://localhost:9000/generatePDF", {
+          body: JSON.stringify({ type, offset }),
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        });
 
-      // const blob = await response.blob();
-      // const file = URL.createObjectURL(blob);
-      // window.open(file);
-    } catch (e) {
-      console.error(e);
+        const json = await response.json();
+        window.open(json[0].path, "__blank");
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -84,7 +85,7 @@ export default function UI({ values, onPDFTypeChange }) {
           </ToggleButton>
 
           <ToggleButton value="mobile">
-            <PictureAsPdfIcon sx={{ pr: 1 }} /> Mobil
+            <PictureAsPdfIcon sx={{ pr: 1 }} /> Movil
           </ToggleButton>
 
           <TextField
