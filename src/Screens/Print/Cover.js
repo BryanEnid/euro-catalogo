@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Box, Typography } from "@mui/material/";
 import CoverImage from "../../assets/cover.png";
 
-export default function Cover({ salesType }) {
+export default function Cover({ salesType, pdfType }) {
   const text = Object({
     mayor: "Al por mayor",
     detalle: "Al detalle",
@@ -14,7 +14,7 @@ export default function Cover({ salesType }) {
       item
       xs={12}
       sx={{
-        pageBreakAfter: "always",
+        ...(pdfType === "print" && { pageBreakAfter: "always" }),
         maxWidth: 720,
         maxHeight: "100vh",
         display: "flex",

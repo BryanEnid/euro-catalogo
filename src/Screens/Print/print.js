@@ -8,9 +8,14 @@ import Cover from "./Cover";
 import Card from "./Card";
 import UI from "./UI";
 
+const config = {
+  salesType: localStorage.getItem("sales"),
+  pdfType: localStorage.getItem("pdf"),
+};
+
 export default function Print({ store }) {
-  const [salesType, setSalesType] = React.useState("todos");
-  const [pdfType, setPDFType] = React.useState("print");
+  const [salesType, setSalesType] = React.useState(config.salesType ?? "todos");
+  const [pdfType, setPDFType] = React.useState(config.pdfType ?? "print");
   const [sections, setSections] = React.useState([]);
 
   React.useEffect(() => {
@@ -33,10 +38,33 @@ export default function Print({ store }) {
       });
       setSections(data);
     }
-  }, [store, pdfType]);
+  }, [store]);
 
   const handleNewSections = (value, type) => {
-    console.log(value, type);
+    const setters = { sales: setSalesType, pdf: setPDFType };
+    setters[type](value);
+
+    if (type === "pdf") {
+      if (store.length && value === "print") {
+        const data = store.map((item) => {
+          const groups = breakArrayIntoGroups(item.articulos, 6);
+          return {
+            section: item.nombre,
+            list: groups,
+          };
+        });
+        setSections(data);
+      } else if (store.length) {
+        const data = store.map((item) => {
+          return {
+            section: item.nombre,
+            list: item.articulos,
+            id: item.id,
+          };
+        });
+        setSections(data);
+      }
+    }
   };
 
   if (sections.length) {
@@ -50,11 +78,10 @@ export default function Print({ store }) {
       >
         <UI
           values={{ print: salesType, pdf: pdfType }}
-          setters={{ print: setSalesType, pdf: setPDFType }}
           onPDFTypeChange={handleNewSections}
         />
 
-        <Cover salesType={salesType} />
+        <Cover salesType={salesType} pdfType={pdfType} />
 
         {pdfType === "print" && isArray(sections[0].list?.[0]) ? (
           <PrintVersion
@@ -154,8 +181,6 @@ const MobileVersion = ({ sections, salesType, pdfType }) => {
         container
         sx={{
           maxWidth: 720,
-          // pageBreakAfter: "always",
-          // height: "100vh",
           display: "flex",
           margin: "0 auto",
           py: 1,

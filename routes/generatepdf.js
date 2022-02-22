@@ -4,11 +4,11 @@ const puppeteer = require("puppeteer");
 // Input
 const address = "http://localhost:3000";
 
-function delay(time) {
-  return new Promise(function (resolve) {
-    setTimeout(resolve, time);
-  });
-}
+// function delay(time) {
+//   return new Promise(function (resolve) {
+//     setTimeout(resolve, time);
+//   });
+// }
 
 exports.generatePDF = async (req, res) => {
   const defaultViewport = {
@@ -45,14 +45,14 @@ exports.generatePDF = async (req, res) => {
     } else if (type === "mobile") {
       const elem = await page.$("html");
       const boundingBox = await elem.boundingBox();
+
       await page.pdf({
         path: filename,
         margin: { bottom: 0, left: 0, right: 0, top: 0 },
-        // omitBackground: false,
-        // printBackground: true,
+        printBackground: true,
         scale: 1,
-        height: boundingBox.height,
-        width: boundingBox.width, // TODO
+        height: boundingBox.height + req.body.offset,
+        width: 720,
         pageRanges: "1",
       });
     }
@@ -63,12 +63,10 @@ exports.generatePDF = async (req, res) => {
 
   // Generar pdf "al por mayor"
   await page.click("#mayor");
-  // await delay(4000);
   await generatePDF(req.body.type, "mayor");
 
   // Generar pdf "al detalle"
   await page.click("#detalle");
-  // await delay(4000);
   await generatePDF(req.body.type, "detalle");
 
   // Enviar archivos

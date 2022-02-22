@@ -3,6 +3,11 @@ import React from "react";
 import Stack from "@mui/material/Stack";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import TextField from "@mui/material/TextField";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import { Typography } from "@mui/material";
+
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
@@ -10,33 +15,45 @@ import NoteOutlinedIcon from "@mui/icons-material/NoteOutlined";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import { Typography } from "@mui/material";
+function isNumeric(str) {
+  if (typeof str != "string") return false; // we only process strings!
+  return (
+    !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+    !isNaN(parseFloat(str))
+  ); // ...and ensure strings of whitespace fail
+}
 
-export default function UI({ values, setters, onPDFTypeChange }) {
+const config = { offset: localStorage.getItem("offset") };
+
+export default function UI({ values, onPDFTypeChange }) {
   const [hidden, setHidden] = React.useState(false);
+  const [offset, setOffset] = React.useState(config.offset ?? 400);
 
   const handleOption = (value, type) => {
-    // if (value !== null) setters[type](value);
     if (value !== null) handleSections(value, type);
   };
 
   const handleSections = (value, type) => {
     onPDFTypeChange(value, type);
+    localStorage.setItem(type, value);
   };
 
   const handlePDF = async (type) => {
+    if (isNumeric(type) || type === "") {
+      setOffset(Number(type));
+      localStorage.setItem("offset", type);
+      return;
+    }
     try {
       const response = await fetch("http://localhost:9000/generatePDF", {
-        body: JSON.stringify({ type }),
+        body: JSON.stringify({ type, offset }),
         method: "POST",
         headers: { "Content-Type": "application/json" },
       });
 
-      const blob = await response.blob();
-      const file = URL.createObjectURL(blob);
-      window.open(file);
+      // const blob = await response.blob();
+      // const file = URL.createObjectURL(blob);
+      // window.open(file);
     } catch (e) {
       console.error(e);
     }
@@ -46,7 +63,12 @@ export default function UI({ values, setters, onPDFTypeChange }) {
 
   return (
     <Box
-      sx={{ position: "fixed", zIndex: 2, "@media print": { display: "none" } }}
+      sx={{
+        position: "fixed",
+        zIndex: 2,
+        "@media print": { display: "none" },
+        width: 130,
+      }}
     >
       <Grid item xs={12} justifyContent="flex-start" sx={{ padding: 1 }}>
         <ToggleButtonGroup
@@ -64,6 +86,14 @@ export default function UI({ values, setters, onPDFTypeChange }) {
           <ToggleButton value="mobile">
             <PictureAsPdfIcon sx={{ pr: 1 }} /> Mobil
           </ToggleButton>
+
+          <TextField
+            label={<Typography variant="caption">Offset</Typography>}
+            type="number"
+            variant="outlined"
+            defaultValue={Number(offset)}
+            // value={Number(offset)}
+          />
         </ToggleButtonGroup>
       </Grid>
 
@@ -73,7 +103,7 @@ export default function UI({ values, setters, onPDFTypeChange }) {
             orientation="vertical"
             value={values.print}
             exclusive
-            onChange={(e, i) => handleOption(i, "salesType")}
+            onChange={(e, i) => handleOption(i, "sales")}
             size={"small"}
             color="primary"
             sx={{ background: "white" }}
