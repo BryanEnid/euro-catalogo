@@ -2,6 +2,7 @@ import React from "react";
 import { breakArrayIntoGroups } from "../../utils";
 import { Typography, Grid, Box } from "@mui/material";
 import { isArray } from "lodash";
+import "./styles.css";
 
 import { theme } from "../../theme";
 import Cover from "./Cover";

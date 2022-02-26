@@ -52,4 +52,35 @@ export const theme = createTheme({
       contrastText: "#000",
     },
   },
+
+  // MuiCssBaseline: {
+  //   styleOverrides: {
+  //     "@font-face": [
+  //       {
+  //         fontFamily: "ReadexPro",
+  //         fontStyle: "regular",
+  //         fontWeight: 400,
+  //         src: `url(${ReadexPro_Regular})`,
+  //       },
+  //       {
+  //         fontFamily: "ReadexPro",
+  //         fontStyle: "medium",
+  //         fontWeight: 500,
+  //         src: `url(${ReadexPro_Medium})`,
+  //       },
+  //       {
+  //         fontFamily: "ReadexPro",
+  //         fontStyle: "semi bold",
+  //         fontWeight: 600,
+  //         src: `url(${ReadexPro_SemiBold})`,
+  //       },
+  //       {
+  //         fontFamily: "ReadexPro",
+  //         fontStyle: "bold",
+  //         fontWeight: 700,
+  //         src: `url(${ReadexPro_Bold})`,
+  //       },
+  //     ],
+  //   },
+  // },
 });

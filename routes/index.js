@@ -10,6 +10,6 @@ router.post("/save", save);
 router.get("/load", read);
 
 // Generar PDF
-router.post("/generatePDF", generatePDF);
+router.get("/generatePDF", generatePDF);
 
 module.exports = router;
