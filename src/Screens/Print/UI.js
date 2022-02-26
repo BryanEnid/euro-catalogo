@@ -171,7 +171,6 @@ export default function UI({ values, onPDFTypeChange }) {
       </Box>
       <Modal
         open={filesReady === false}
-        open
         // onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
