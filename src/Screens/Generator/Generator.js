@@ -53,7 +53,11 @@ const Search = ({ onChange = () => {} }) => {
       placeholder="Buscar"
       onChange={({ target }) => {
         setInput(target.value);
-        onChange({ value: target.value, setter: setInput, cb: onChange });
+        onChange({
+          value: target.value,
+          setter: setInput,
+          cb: onChange,
+        });
       }}
     />
   );
@@ -473,8 +477,10 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
   };
 
   const handleScrollToItem = (e) => {
-    search.setter("");
+    e.preventDefault();
     search.cb({ value: "", setter: search.setter });
+    search.setter("");
+
     e.target.scrollIntoView({ block: "start" });
   };
 
@@ -509,8 +515,8 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
       {/* Details */}
       <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         {!!search?.value?.length && (
-          <div style={styles.field} onClick={handleScrollToItem}>
-            <button>Scrollear hasta aqui </button>
+          <div style={styles.field}>
+            <button onClick={handleScrollToItem}>Scrollear hasta aqui </button>
           </div>
         )}
 
