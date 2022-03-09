@@ -7,6 +7,7 @@ import { SortableContainer, SortableElement } from "react-sortable-hoc";
 import { arrayMoveImmutable as arrayMove } from "array-move";
 import SortItemEditTeplate from "./SortItemEditTemplate";
 import { CircularProgress } from "@mui/material";
+import NotFoundImage from "../../assets/notfound.jpeg";
 
 const styles = {
   seccion: {
@@ -19,16 +20,49 @@ const styles = {
     position: "relative",
   },
   eliminarSeccion: {
+    margin: "0 10px",
     background: "red",
     borderRadius: 4,
     color: "white",
     border: "1px solid red",
   },
+  field: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    margin: "2px 0",
+  },
+};
+
+const Search = ({ onChange = () => {} }) => {
+  const [input, setInput] = React.useState("");
+  const inputRef = React.useRef(null);
+
+  return (
+    <input
+      style={{
+        width: 300,
+        border: "1px solid #999",
+        borderRadius: 3,
+        margin: 3,
+        padding: 10,
+      }}
+      ref={inputRef}
+      type="text"
+      value={input}
+      placeholder="Buscar"
+      onChange={({ target }) => {
+        setInput(target.value);
+        onChange({ value: target.value, setter: setInput, cb: onChange });
+      }}
+    />
+  );
 };
 
 const Generator = () => {
+  const [search, setSearch] = React.useState({ value: "", setter: () => {} });
   const [sections, setSections] = React.useState(null);
-  const [sectionName, setSectionName] = React.useState();
+  const [sectionName, setSectionName] = React.useState("");
   const [dragEnabled, setDragEnabled] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const fileRef = React.useRef();
@@ -54,13 +88,12 @@ const Generator = () => {
   React.useEffect(() => {
     if (sections) {
       handleSave(sections);
-      console.log("saved");
     }
   }, [sections]);
 
   const handleCreateSection = () => {
     if (sectionName) {
-      const data = [...sections, { nombre: sectionName, id: uuid() }];
+      const data = [{ nombre: sectionName, id: uuid() }, ...sections];
       const isEqual = _.isEqual(data, sections); // true
       if (!isEqual) {
         setSections(data);
@@ -135,40 +168,6 @@ const Generator = () => {
     }
   };
 
-  const generatePDF = async () => {
-    const promises = [
-      fetch("http://localhost:9000/generatePDF", {
-        method: "POST",
-        body: JSON.stringify({ salesType: "mayor" }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-      fetch("http://localhost:9000/generatePDF", {
-        method: "POST",
-        body: JSON.stringify({ salesType: "detalle" }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-      fetch("http://localhost:9000/generatePDF", {
-        method: "POST",
-        body: JSON.stringify({ salesType: "todos" }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }),
-    ];
-
-    const responses = await Promise.all(promises);
-
-    for await (const response of responses) {
-      const blob = await response.blob();
-      const file = URL.createObjectURL(blob);
-      window.open(file);
-    }
-  };
-
   // Render "Upload File"
   if (!sections) {
     return (
@@ -201,31 +200,44 @@ const Generator = () => {
 
   return (
     <>
-      <input
-        value={sectionName}
-        onChange={(v) => setSectionName(v.target.value)}
-        onKeyUp={({ key }) => key === "Enter" && handleCreateSection()}
-        placeholder="Nombre de la seccion"
-        type="text"
-      />
-      <button onClick={handleCreateSection}>Crear</button>
-      <button onClick={() => fileRef.current.click()}>Importar</button>
-      <input
-        style={{ display: "none" }}
-        onChange={handleFileUpload}
-        type="file"
-        ref={fileRef}
-        accept="application/json"
-      />
-      {/* <button onClick={() => handleSave(sections)}>Guardar</button> */}
-      <button onClick={() => download(sections)}>Exportar</button>
-      <button onClick={generatePDF}>Generar PDF</button>
-      <button
-        onClick={() => setDragEnabled(!dragEnabled)}
-        style={{ color: !dragEnabled ? "black" : "red" }}
-      >
-        Ordenar {dragEnabled && "- ACTIVO"}
-      </button>
+      <div>
+        <input
+          style={{
+            border: "1px solid #999",
+            borderRadius: 3,
+            padding: 10,
+            margin: 3,
+            width: 300,
+          }}
+          value={sectionName}
+          onChange={(v) => setSectionName(v.target.value)}
+          onKeyUp={({ key }) => key === "Enter" && handleCreateSection()}
+          placeholder="Nombre de la seccion"
+          type="text"
+        />
+        <button onClick={handleCreateSection}>Crear</button>
+        <button onClick={() => fileRef.current.click()}>Importar</button>
+        <input
+          style={{ display: "none" }}
+          onChange={handleFileUpload}
+          type="file"
+          ref={fileRef}
+          accept="application/json"
+        />
+        <button onClick={() => download(sections)}>Exportar</button>
+        {/* <button onClick={generatePDF}>Generar PDF</button> */}
+        <button
+          onClick={() => setDragEnabled(!dragEnabled)}
+          style={{ color: !dragEnabled ? "black" : "red" }}
+        >
+          Ordenar {dragEnabled && "- ACTIVO"}
+        </button>
+      </div>
+
+      <div>
+        <Search onChange={setSearch} />
+      </div>
+
       {sections.map((datos) => {
         return (
           <Seccion
@@ -235,6 +247,7 @@ const Generator = () => {
             onRename={handleRename}
             onDelete={handleRemoveSection}
             dragEnabled={dragEnabled}
+            search={search}
           />
         );
       })}
@@ -242,7 +255,14 @@ const Generator = () => {
   );
 };
 
-const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
+const Seccion = ({
+  datos,
+  onSubmit,
+  onRename,
+  onDelete,
+  dragEnabled,
+  search,
+}) => {
   const [elements, setElements] = React.useState(datos.articulos ?? []);
   const [nombre, setNombre] = React.useState(datos.nombre ?? "");
 
@@ -253,7 +273,7 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
   }, [elements]);
 
   const handleNewElement = () => {
-    setElements([...elements, { id: uuid() }]);
+    setElements([{ id: uuid() }, ...elements]);
   };
 
   const handleSubmit = (payload) => {
@@ -289,79 +309,72 @@ const Seccion = ({ datos, onSubmit, onRename, onDelete, dragEnabled }) => {
 
   const SortableList = SortableContainer(({ items }) => {
     return (
-      <tbody>
+      <div key={"yay"}>
         {items.map((value, index) => (
           <SortableItem
+            key={value.id}
             index={index}
             value={{ ...value, seccion: datos.nombre }}
           />
         ))}
-      </tbody>
+      </div>
     );
   });
 
   return (
     <div style={styles.seccion}>
-      <input
-        type="text"
-        value={nombre}
-        onChange={({ target }) => setNombre(target.value)}
-        onBlur={handleSectionRename}
-      />
-
-      <table className="table_container">
-        {!dragEnabled && (
-          <thead>
-            <th style={{ width: "2%" }}> </th>
-            <th style={{ width: "25%" }}>Nombre Imagen</th>
-            <th style={{ width: "35%" }}>Titulo</th>
-            <th style={{ width: "7%" }}>
-              Precio (Al por mayor) y (Al detalle)
-            </th>
-            <th style={{ width: "13%" }}>Codigos</th>
-            <th style={{ width: "2%" }}>Agotado</th>
-            <th style={{ width: "4%" }}></th>
-          </thead>
-        )}
-
-        {dragEnabled ? (
-          <SortableList
-            items={elements}
-            onSortEnd={onSortEnd}
-            lockAxis="y"
-            lockToContainerEdges
-            lockOffset="20%"
-            useWindowAsScrollContainer
-          />
-        ) : (
-          elements.map((data) => (
-            <Articulo
-              key={data.id}
-              data={data}
-              onSubmit={handleSubmit}
-              onDelete={handleDelete}
-              seccion={datos.nombre}
-            />
-          ))
-        )}
-      </table>
+      <div>
+        <input
+          style={{
+            border: "1px solid #999",
+            borderRadius: 3,
+            padding: 10,
+            margin: "10px 0",
+            boxSizing: "border-box",
+          }}
+          type="text"
+          value={nombre}
+          onChange={({ target }) => setNombre(target.value)}
+          onBlur={handleSectionRename}
+        />
+      </div>
 
       <div>
         <button onClick={handleNewElement}>+ Crear articulo nuevo</button>
-      </div>
-      <br />
-      <div>
         <button style={styles.eliminarSeccion} onClick={() => onDelete(datos)}>
           - Borrar seccion
         </button>
       </div>
+
+      {dragEnabled ? (
+        <SortableList
+          items={elements}
+          onSortEnd={onSortEnd}
+          lockAxis="y"
+          lockToContainerEdges
+          lockOffset="20%"
+          useWindowAsScrollContainer
+        />
+      ) : (
+        elements.map((data) => (
+          <Articulo
+            key={data.id}
+            data={data}
+            onSubmit={handleSubmit}
+            onDelete={handleDelete}
+            seccion={datos.nombre}
+            search={search}
+          />
+        ))
+      )}
     </div>
   );
 };
 
-const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
+const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
   const imageInput = React.useState(data.imagen ?? "");
   const tituloInput = React.useState(data.titulo ?? "");
+  const footerInput = React.useState(data.footer ?? "");
   const precioInput1 = React.useState(data.precio?.mayor ?? "");
   const precioInput2 = React.useState(data.precio?.detalle ?? "");
   const codigoInput1 = React.useState(data.codigos?.[0] ?? "");
@@ -369,6 +382,23 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
   const codigoInput3 = React.useState(data.codigos?.[2] ?? "");
   const agotadoInput = React.useState(data.agotado ?? false);
   const [imageExists, setImageExists] = React.useState(null);
+  const [show, setShow] = React.useState(true);
+  const [, setNoImage] = React.useState(false);
+  const [image, setImage] = React.useState(
+    `./assets/${seccion}/${data.imagen}`
+  );
+
+  React.useEffect(() => {
+    if (search.value.length) {
+      const match =
+        tituloInput[0].toUpperCase().indexOf(search.value.toUpperCase()) > -1;
+      setShow(match);
+    } else {
+      setShow(true);
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.value]);
 
   const payload = () => {
     const precios = { detalle: precioInput2[0], mayor: precioInput1[0] };
@@ -381,6 +411,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
       imagen: imageInput[0],
       titulo: tituloInput[0],
       precio: precios,
+      footer: footerInput[0],
       agotado: agotadoInput[0],
       codigos,
       id: data.id,
@@ -436,79 +467,182 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <tr>
-      <td></td>
+  const handleImageError = (e) => {
+    setNoImage(true);
+    setImage(NotFoundImage);
+  };
 
-      <td>
-        <input type="text" {...config(imageInput)} />
-        {imageExists !== null && (
-          <div
-            className="icon"
-            style={{
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            {imageExists ? (
-              <>
-                <span style={{ color: "green" }}>&#10003;</span>
-                <button onClick={handlePreviewImage}>ver imagen</button>
-              </>
-            ) : (
-              <span style={{ color: "red" }}>&#10005;</span>
-            )}
+  const handleScrollToItem = (e) => {
+    search.setter("");
+    search.cb({ value: "", setter: search.setter });
+    e.target.scrollIntoView({ block: "start" });
+  };
+
+  if (!show) return <></>;
+
+  return (
+    <div
+      id={tituloInput[0].replace(/\s/g, "").toLowerCase()}
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        margin: 3,
+        padding: 3,
+        border: "1px solid #ddd",
+        borderRadius: 10,
+      }}
+    >
+      {/* Image */}
+      <div>
+        <img
+          src={image}
+          onError={handleImageError}
+          alt={image}
+          style={{
+            width: 180,
+            height: 180,
+            objectFit: "cover",
+          }}
+        />
+      </div>
+
+      {/* Details */}
+      <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        {!!search?.value?.length && (
+          <div style={styles.field} onClick={handleScrollToItem}>
+            <button>Scrollear hasta aqui </button>
           </div>
         )}
-      </td>
-      <td>
-        <input type="text" {...config(tituloInput)} />
-      </td>
 
-      <td>
-        <tr>
-          <td>
-            <input type="text" {...config(precioInput1)} />
-          </td>
-          <td>
-            <input type="text" {...config(precioInput2)} />
-          </td>
-        </tr>
-      </td>
+        <div style={styles.field}>
+          <span>Image: </span>
+          {imageExists ? (
+            <>
+              <button style={{ margin: "0 10px" }} onClick={handlePreviewImage}>
+                imagen
+              </button>
+              <span style={{ color: "green" }}>&#10003;</span>
+            </>
+          ) : (
+            <>
+              <span style={{ color: "red", margin: "0 10px" }}>&#10005;</span>
+              <span style={{ color: "red", margin: "0 10px" }}>&#10005;</span>
+              <span style={{ color: "red", margin: "0 10px" }}>&#10005;</span>
+            </>
+          )}
+          <input
+            style={{ marginLeft: 10, borderRadius: 6, padding: "5px 10px" }}
+            type="text"
+            {...config(imageInput)}
+          />
+        </div>
 
-      <td>
-        <tr>
-          <td>
-            <input type="text" {...config(codigoInput1)} />
-          </td>
-          <td>
-            <input type="text" {...config(codigoInput2)} />
-          </td>
-          <td>
-            <input type="text" {...config(codigoInput3)} />
-          </td>
-        </tr>
-      </td>
+        <div style={styles.field}>
+          <span>Titulo: </span>
+          <input
+            style={{ marginLeft: 10, borderRadius: 6, padding: "5px 10px" }}
+            type="text"
+            {...config(tituloInput)}
+          />
+        </div>
 
-      <td>
-        <input
-          type="checkbox"
-          {...config(agotadoInput, "checked", "agotado")}
-        />
-      </td>
+        <div style={styles.field}>
+          <span>Footer:</span>
+          <input
+            style={{ marginLeft: 10, borderRadius: 6, padding: "5px 10px" }}
+            type="text"
+            {...config(footerInput)}
+          />
+        </div>
 
-      <span
-        style={{
-          display: "flex",
-          flexGrow: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <button onClick={handleRemoveItem}>borrar</button>
-      </span>
-    </tr>
+        <div style={styles.field}>
+          <span>Precios: </span>
+          <div style={{ margin: "0 10px" }}>
+            Al por mayor
+            <input
+              style={{
+                borderRadius: 6,
+                padding: "5px 10px",
+                boxSizing: "border-box",
+              }}
+              type="text"
+              {...config(precioInput1)}
+            />
+          </div>
+
+          <div>
+            Al detalle
+            <input
+              style={{
+                borderRadius: 6,
+                padding: "5px 10px",
+                boxSizing: "border-box",
+              }}
+              type="text"
+              {...config(precioInput1)}
+            />
+          </div>
+        </div>
+
+        <div style={styles.field}>
+          <span>Codigo: </span>
+          <div style={{ margin: "0 10px" }}>
+            <input
+              style={{
+                borderRadius: 6,
+                padding: "5px 10px",
+                boxSizing: "border-box",
+              }}
+              type="text"
+              {...config(codigoInput1)}
+            />
+          </div>
+
+          <div>
+            <input
+              style={{
+                borderRadius: 6,
+                padding: "5px 10px",
+                boxSizing: "border-box",
+              }}
+              type="text"
+              {...config(codigoInput2)}
+            />
+          </div>
+
+          <div style={{ margin: "0 10px" }}>
+            <input
+              style={{
+                borderRadius: 6,
+                padding: "5px 10px",
+                boxSizing: "border-box",
+              }}
+              type="text"
+              {...config(codigoInput3)}
+            />
+          </div>
+        </div>
+
+        <div style={styles.field}>
+          <div>
+            Existe:
+            <input
+              style={{ width: 30 }}
+              type="checkbox"
+              {...config(agotadoInput, "checked", "agotado")}
+            />
+          </div>
+        </div>
+
+        <div style={styles.field}>
+          <div>
+            <button style={{ width: "100%" }} onClick={handleRemoveItem}>
+              borrar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

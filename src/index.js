@@ -5,10 +5,8 @@ import { ThemeProvider } from "@mui/material/";
 import { theme } from "./theme";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <Routes />
-    </ThemeProvider>
-  </React.StrictMode>,
+  <ThemeProvider theme={theme}>
+    <Routes />
+  </ThemeProvider>,
   document.getElementById("root")
 );

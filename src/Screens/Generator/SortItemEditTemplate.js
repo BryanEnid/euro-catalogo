@@ -24,30 +24,37 @@ const SortItemEditTeplate = ({ value }) => {
   const [image, setImage] = React.useState(
     `./assets/${value.seccion}/${value.imagen}`
   );
+  const unmounted = React.useRef(false);
 
   React.useEffect(() => {
     const tester = new Image();
     tester.src = `./assets/${value.seccion}/${value.imagen}`;
-    tester.onerror = () => setImage(NotFoundImage);
+    tester.onerror = () => !unmounted.current && setImage(NotFoundImage);
+
+    return () => {
+      unmounted.current = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <div style={styles.card} key={value.id}>
-      <img
-        src={image}
-        style={styles.image}
-        alt={value.imagen}
-        key={value.image}
-      />
-      <div style={{ margin: "0 10px" }}>
-        <div>{value.titulo}</div>
-        <div>
-          Al por mayor: {value.precio.mayor} | Al detalle:{" "}
-          {value.precio.detalle}
+    <center>
+      <div style={styles.card} key={value.id}>
+        <img
+          src={image}
+          style={styles.image}
+          alt={value.imagen}
+          key={value.image}
+        />
+        <div style={{ margin: "0 10px" }}>
+          <div>{value.titulo}</div>
+          <div>
+            Al por mayor: {value.precio.mayor} | Al detalle:{" "}
+            {value.precio.detalle}
+          </div>
         </div>
       </div>
-    </div>
+    </center>
   );
 };
 

@@ -161,6 +161,14 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
           )}
         </Box>
       </Box>
+
+      <Box sx={{ flexGrow: 1 }}>
+        <Box>
+          <Typography variant="caption" color="primary.dark">
+            {data.footer}
+          </Typography>
+        </Box>
+      </Box>
     </Grid>
   );
 }
