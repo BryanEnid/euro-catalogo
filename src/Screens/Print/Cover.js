@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material/";
-import CoverImage from "../../../public/assets/cover.png";
+const CoverImage = "/assets/cover.png"
 
 export default function Cover({ salesType, pdfType }) {
   const text = Object({
