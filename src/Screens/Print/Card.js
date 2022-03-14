@@ -73,6 +73,24 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
         ...(data.suppress && { opacity: 0 }),
       }}
     >
+      {data.agotado && (
+        <Box
+          sx={{
+            border: "3px solid red",
+            borderRadius: 10,
+            padding: 0.5,
+            width: 140,
+            background: "white",
+            transform: "rotate(-30deg) translate(-30px, 10px)",
+          }}
+        >
+          <center>
+            <Typography variant="caption" fontWeight={700} color="red">
+              Agotado
+            </Typography>
+          </center>
+        </Box>
+      )}
       <Grid container direction="row" sx={{ flexGrow: 4 }}>
         <Box
           justifyContent="center"
@@ -164,7 +182,12 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
 
       <Box sx={{ flexGrow: 1 }}>
         <Box>
-          <Typography variant="caption" color="primary.dark">
+          <Typography
+            variant="caption"
+            fontSize={13}
+            fontWeight={700}
+            color="primary.dark"
+          >
             {data.footer}
           </Typography>
         </Box>
