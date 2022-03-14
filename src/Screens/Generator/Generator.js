@@ -585,7 +585,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
                 boxSizing: "border-box",
               }}
               type="text"
-              {...config(precioInput1)}
+              {...config(precioInput2)}
             />
           </div>
         </div>
