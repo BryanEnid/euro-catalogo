@@ -10,7 +10,7 @@ exports.generatePDF = async (req, res) => {
   const offset = Number(req.query.offset);
   const defaultViewport = {
     width: 720,
-    height: 1080,
+    height: 1280,
   };
   const browser = await puppeteer.launch({
     headless: true,
@@ -21,7 +21,7 @@ exports.generatePDF = async (req, res) => {
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
-      // `--window-size=${defaultViewport.width},${defaultViewport.height}`,
+      `--window-size=${defaultViewport.width},${defaultViewport.height}`,
     ],
     defaultViewport,
   });
@@ -37,6 +37,7 @@ exports.generatePDF = async (req, res) => {
           margin: { bottom: 0, left: 0, right: 0, top: 0 },
           printBackground: true,
           width: 720,
+          height: 1280,
           scale: 1,
         });
       } else if (type === "mobile") {
