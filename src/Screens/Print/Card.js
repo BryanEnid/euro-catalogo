@@ -64,6 +64,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
         borderRadius: "30px",
         display: "flex",
         flexDirection: "column",
+
         px: 3,
         py: 1,
         // WebkitFilter: pdfType === "mobile" && "drop-shadow(0px 0px 20px #333)",
@@ -73,30 +74,51 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
         ...(data.suppress && { opacity: 0 }),
       }}
     >
-      {data.agotado && (
-        <Box
-          sx={{
-            border: "3px solid red",
-            borderRadius: 10,
-            padding: 0.5,
-            width: 140,
-            background: "white",
-            transform: "rotate(-30deg) translate(-30px, 10px)",
-          }}
-        >
-          <center>
-            <Typography variant="caption" fontWeight={700} color="red">
-              Agotado
-            </Typography>
-          </center>
-        </Box>
-      )}
+      {(data?.oferta || data?.agotado) && <Box sx={{ height: 20 }} />}
       <Grid container direction="row" sx={{ flexGrow: 4 }}>
         <Box
           justifyContent="center"
           alignItems="center"
-          sx={{ flex: 5, display: "flex" }}
+          sx={{ flex: 5, display: "flex", position: "relative" }}
         >
+          {data.agotado && (
+            <Box
+              sx={{
+                border: "3px solid red",
+                borderRadius: 10,
+                padding: 0.5,
+                width: 140,
+                background: "white",
+                transform: "rotate(-30deg) translate(-30px, 10px)",
+              }}
+            >
+              <center>
+                <Typography variant="caption" fontWeight={700} color="red">
+                  Agotado
+                </Typography>
+              </center>
+            </Box>
+          )}
+          {data?.oferta && (
+            <Box
+              sx={{
+                position: "absolute",
+                border: "3px solid #00bb00",
+                borderRadius: 10,
+                padding: 0.5,
+                width: 110,
+                bottom: 0,
+                right: 0,
+                transform: "translate(25px, -15px) rotate(-20deg) ",
+              }}
+            >
+              <center>
+                <Typography variant="caption" fontWeight={700} color="#00bb00">
+                  Oferta
+                </Typography>
+              </center>
+            </Box>
+          )}
           <img
             src={image}
             onError={handleImageError}

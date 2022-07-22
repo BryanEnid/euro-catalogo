@@ -384,7 +384,9 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
   const codigoInput1 = React.useState(data.codigos?.[0] ?? "");
   const codigoInput2 = React.useState(data.codigos?.[1] ?? "");
   const codigoInput3 = React.useState(data.codigos?.[2] ?? "");
-  const agotadoInput = React.useState(data.agotado ?? false);
+  const agotadoInput = React.useState(data?.agotado ?? false);
+  const ofertaInput = React.useState(data?.oferta ?? false);
+
   const [imageExists, setImageExists] = React.useState(null);
   const [show, setShow] = React.useState(true);
   const [, setNoImage] = React.useState(false);
@@ -417,6 +419,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
       precio: precios,
       footer: footerInput[0],
       agotado: agotadoInput[0],
+      oferta: ofertaInput[0],
       codigos,
       id: data.id,
     };
@@ -631,11 +634,22 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
 
         <div style={styles.field}>
           <div>
-            Existe:
+            Agotado:
             <input
               style={{ width: 30 }}
               type="checkbox"
               {...config(agotadoInput, "checked", "agotado")}
+            />
+          </div>
+        </div>
+
+        <div style={styles.field}>
+          <div>
+            Oferta:
+            <input
+              style={{ width: 30 }}
+              type="checkbox"
+              {...config(ofertaInput, "checked", "oferta")}
             />
           </div>
         </div>

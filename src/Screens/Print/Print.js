@@ -176,8 +176,6 @@ const PrintVersion = ({ sections, salesType, pdfType }) => {
 const MobileVersion = ({ sections, salesType, pdfType }) => {
   return sections?.map(
     (sectionGroup, i) => (
-      // sectionGroup.list.map((item) => {
-
       <Grid
         key={sectionGroup.id}
         container

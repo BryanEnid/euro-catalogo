@@ -190,6 +190,8 @@ const Card = ({ articulo, saleType, seccion }) => {
     setImage(NotFoundImage);
   };
 
+  console.log(">>>", "articulo");
+
   return (
     <div
       style={{
@@ -203,7 +205,8 @@ const Card = ({ articulo, saleType, seccion }) => {
       <div style={{ textAlign: "right", color: "#bbb" }}>{seccion}</div>
       <div style={styles.cartaHeader}>
         <div style={{ position: "relative" }}>
-          {articulo.agotado && <div style={styles.agotado}> AGOTADO </div>}
+          {articulo?.agotado && <div style={styles.agotado}> AGOTADO </div>}
+          {articulo?.oferta && <div style={styles.oferta}> OFERTA </div>}
 
           <img
             src={image}
