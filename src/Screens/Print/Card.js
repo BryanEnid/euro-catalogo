@@ -55,6 +55,8 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
     );
   };
 
+  console.log(">>>", salesType);
+
   return (
     <Grid
       item
@@ -89,7 +91,10 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                 padding: 0.5,
                 width: 140,
                 background: "white",
-                transform: "rotate(-30deg) translate(-30px, 10px)",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                transform: "translate(-25px, 5px) rotate(-20deg) ",
               }}
             >
               <center>
@@ -99,7 +104,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
               </center>
             </Box>
           )}
-          {data?.oferta && (
+          {data?.oferta && salesType === "mayor" && (
             <Box
               sx={{
                 position: "absolute",
@@ -107,6 +112,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                 borderRadius: 10,
                 padding: 0.5,
                 width: 110,
+                background: "white",
                 bottom: 0,
                 right: 0,
                 transform: "translate(25px, -15px) rotate(-20deg) ",
