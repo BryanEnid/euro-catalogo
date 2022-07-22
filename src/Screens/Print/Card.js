@@ -55,8 +55,6 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
     );
   };
 
-  console.log(">>>", salesType);
-
   return (
     <Grid
       item
