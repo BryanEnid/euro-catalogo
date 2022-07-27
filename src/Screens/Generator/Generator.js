@@ -381,6 +381,8 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
   const footerInput = React.useState(data.footer ?? "");
   const precioInput1 = React.useState(data.precio?.mayor ?? "");
   const precioInput2 = React.useState(data.precio?.detalle ?? "");
+  const precioPrevioInput1 = React.useState(data.precioPrevio?.mayor ?? "");
+  const precioPrevioInput2 = React.useState(data.precioPrevio?.detalle ?? "");
   const codigoInput1 = React.useState(data.codigos?.[0] ?? "");
   const codigoInput2 = React.useState(data.codigos?.[1] ?? "");
   const codigoInput3 = React.useState(data.codigos?.[2] ?? "");
@@ -408,6 +410,10 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
 
   const payload = () => {
     const precios = { detalle: precioInput2[0], mayor: precioInput1[0] };
+    const preciosPrevios = {
+      detalle: precioPrevioInput2[0],
+      mayor: precioPrevioInput1[0],
+    };
 
     // Codigo
     const validacion = [codigoInput1[0], codigoInput2[0], codigoInput3[0]];
@@ -417,6 +423,7 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
       imagen: imageInput[0],
       titulo: tituloInput[0],
       precio: precios,
+      precioPrevio: preciosPrevios,
       footer: footerInput[0],
       agotado: agotadoInput[0],
       oferta: ofertaInput[0],
@@ -652,6 +659,37 @@ const Articulo = ({ data, onSubmit, onDelete, seccion, disabled, search }) => {
               {...config(ofertaInput, "checked", "oferta")}
             />
           </div>
+
+          {ofertaInput[0] && (
+            <div style={styles.field}>
+              <span>Precios previos: </span>
+              <div style={{ margin: "0 10px" }}>
+                Al por mayor
+                <input
+                  style={{
+                    borderRadius: 6,
+                    padding: "5px 10px",
+                    boxSizing: "border-box",
+                  }}
+                  type="text"
+                  {...config(precioPrevioInput1)}
+                />
+              </div>
+
+              <div>
+                Al detalle
+                <input
+                  style={{
+                    borderRadius: 6,
+                    padding: "5px 10px",
+                    boxSizing: "border-box",
+                  }}
+                  type="text"
+                  {...config(precioPrevioInput2)}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={styles.field}>

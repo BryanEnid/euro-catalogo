@@ -41,6 +41,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
             borderRadius: 3,
             color: "white",
             fontWeight: 600,
+            position: "relative",
           }}
         >
           ${numberWithCommas(data.precio[salesType])}
@@ -51,6 +52,54 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
             .00
           </Typography>
         </Typography>
+        {/*  */}
+        {data?.oferta && data.precioPrevio[salesType] && (
+          <div style={{ position: "relative", display: "inline" }}>
+            <Typography
+              component="span"
+              sx={{
+                // background: theme.palette[color].main,
+                px: 1,
+                borderRadius: 3,
+                color: "#999",
+                fontWeight: 400,
+                textDecoration: "line-through",
+              }}
+            >
+              ${numberWithCommas(data.precioPrevio[salesType])}
+              <Typography
+                component="span"
+                sx={{ fontSize: theme.typography.body1.fontSize / 1.5 }}
+              >
+                .00
+              </Typography>
+            </Typography>
+
+            <Typography
+              component="span"
+              sx={{
+                fontSize: theme.typography.body1.fontSize / 1.5,
+                position: "absolute",
+                color: "#999",
+                left: "50%",
+                transform: "translate(-50%,-50%)",
+              }}
+            >
+              antes
+            </Typography>
+          </div>
+        )}
+        {/* <Typography
+            component="span"
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              fontSize: theme.typography.body1.fontSize / 1.5,
+            }}
+          >
+            antes
+          </Typography> */}
       </Typography>
     );
   };
@@ -102,7 +151,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
               </center>
             </Box>
           )}
-          {data?.oferta && salesType === "mayor" && (
+          {data?.oferta && data?.precioPrevio?.[salesType] && (
             <Box
               sx={{
                 position: "absolute",
