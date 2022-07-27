@@ -44,7 +44,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
             position: "relative",
           }}
         >
-          ${numberWithCommas(data.precio[salesType])}
+          ${numberWithCommas(data.precio?.[salesType])}
           <Typography
             component="span"
             sx={{ fontSize: theme.typography.body1.fontSize / 1.5 }}
@@ -53,7 +53,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
           </Typography>
         </Typography>
         {/*  */}
-        {data?.oferta && data.precioPrevio[salesType] && (
+        {data?.oferta && data.precioPrevio?.[salesType] && (
           <div style={{ position: "relative", display: "inline" }}>
             <Typography
               component="span"
@@ -66,7 +66,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                 textDecoration: "line-through",
               }}
             >
-              ${numberWithCommas(data.precioPrevio[salesType])}
+              ${numberWithCommas(data.precioPrevio?.[salesType])}
               <Typography
                 component="span"
                 sx={{ fontSize: theme.typography.body1.fontSize / 1.5 }}
@@ -89,17 +89,6 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
             </Typography>
           </div>
         )}
-        {/* <Typography
-            component="span"
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              fontSize: theme.typography.body1.fontSize / 1.5,
-            }}
-          >
-            antes
-          </Typography> */}
       </Typography>
     );
   };
