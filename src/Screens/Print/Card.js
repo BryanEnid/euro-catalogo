@@ -93,6 +93,16 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
     );
   };
 
+  React.useEffect(() => {
+    if (data.codigos === undefined) {
+      console.log(data);
+    }
+  }, []);
+
+  if (data.codigos === undefined) {
+    return <></>;
+  }
+
   return (
     <Grid
       item
@@ -193,7 +203,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
               CODIGO
             </Typography>
           </Box>
-          {data.codigos.map((item, index) => {
+          {data.codigos?.map((item, index) => {
             const [codigo, nombre] = item.split(";");
             const blue = theme.palette.primary.light;
             const green = theme.palette.secondary.light;
