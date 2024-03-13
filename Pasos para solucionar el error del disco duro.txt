@@ -1,0 +1,17 @@
+Paso 1- Abrir CMD
+ 
+Click en el boton de inicio y luego escribir CMD, click derecho en el programa simbolo del sistema y luego click en la opcion ejecutar como administrador.
+
+
+Paso 2-
+ Copiar y pegar los siguientes comandos en el CMD(La pantallita negra) en el siguiente orden.
+
+1-dism/online /cleanup-image /restorehealth 
+
+Cuando el primer comando culmine,ejecutar el siguiente. 
+
+
+2-sfc/scannow 
+
+cuando se complete el segundo paso reiniciar la pc.
+
