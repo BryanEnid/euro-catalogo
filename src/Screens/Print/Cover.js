@@ -1,11 +1,19 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material/";
-const CoverImage = "/assets/cover.png"
+const CoverImage = "/assets/cover.png";
 
 export default function Cover({ salesType, pdfType }) {
+  const FONT_SIZE = 70;
+
   const text = Object({
     mayor: "Al por mayor",
     detalle: "Al detalle",
+    todos: "",
+  })[salesType];
+
+  const color = Object({
+    mayor: "secondary",
+    detalle: "primary",
     todos: "",
   })[salesType];
 
@@ -37,15 +45,19 @@ export default function Cover({ salesType, pdfType }) {
           color: "white",
           top: "50%",
           left: "50%",
-          transform: "translate(-50%,-50%)",
+          transform: "translate(-50%, 50%)",
           width: "100%",
           textAlign: "center",
           fontWeight: "bold",
-          fontSize: 40,
         }}
       >
-        <Typography variant="h1">Cat&#193;logo de productos</Typography>
-        <Typography variant="h1" color="secondary.dark">
+        <Typography fontSize={FONT_SIZE} variant="h1">
+          Cat&#193;logo de
+        </Typography>
+        <Typography fontSize={FONT_SIZE} variant="h1">
+          productos
+        </Typography>
+        <Typography fontSize={FONT_SIZE} variant="h1" color={color}>
           {text}
         </Typography>
       </Box>

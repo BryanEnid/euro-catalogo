@@ -12,6 +12,11 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
   );
   const [, setNoImage] = React.useState(false);
 
+  const color = Object({
+    mayor: "secondary",
+    detalle: "primary",
+  })[salesType];
+
   const handleImageError = (e) => {
     setNoImage(true);
     setImage(NotFoundImage);
@@ -24,11 +29,6 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
     })[salesType];
 
     if (suppress) text = "Precio";
-
-    const color = Object({
-      mayor: "primary",
-      detalle: "secondary",
-    })[salesType];
 
     return (
       <Typography variant="body1" color={color}>
@@ -197,17 +197,20 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
               width: "100%",
               background: theme.palette.primary.main,
               borderRadius: 2,
+              overflow: "hidden",
             }}
           >
-            <Typography variant="caption" color="white" sx={{ my: 1 }}>
-              CODIGO
-            </Typography>
+            <Box sx={{ backdropFilter: "grayscale(120%) brightness(70%)" }}>
+              <Typography variant="caption" color="white" sx={{ my: 1 }}>
+                CODIGO
+              </Typography>
+            </Box>
           </Box>
           {data.codigos?.map((item, index) => {
             const [codigo, nombre] = item.split(";");
-            const blue = theme.palette.primary.light;
-            const green = theme.palette.secondary.light;
-            const color = [blue, "#4cc8d3", green][index];
+            const primary = theme.palette.primary.light;
+            const secondary = theme.palette.secondary.light;
+            const color = [primary, "#4cc8d3", secondary][index];
             return (
               <Box
                 key={`${nombre}-${codigo}`}
@@ -218,13 +221,15 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                   my: 0.5,
                 }}
               >
-                <Typography variant="body2" color="white">
-                  {nombre}
-                </Typography>
-                {nombre && <Divider color="white" />}
-                <Typography variant="body2" color="white">
-                  {codigo}
-                </Typography>
+                <Box sx={{ backdropFilter: "grayscale(100%)" }}>
+                  <Typography variant="body2" color="white">
+                    {nombre}
+                  </Typography>
+                  {nombre && <Divider color="white" />}
+                  <Typography variant="body2" color="white">
+                    {codigo}
+                  </Typography>
+                </Box>
               </Box>
             );
           })}
@@ -233,7 +238,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
 
       <Box sx={{ flexGrow: 1 }}>
         <Box>
-          <Typography variant="body1" color="primary.dark">
+          <Typography variant="body1" sx={{ color: theme.palette[color].dark }}>
             {data.titulo}
           </Typography>
         </Box>

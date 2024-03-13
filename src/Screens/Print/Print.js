@@ -174,6 +174,11 @@ const PrintVersion = ({ sections, salesType, pdfType }) => {
 };
 
 const MobileVersion = ({ sections, salesType, pdfType }) => {
+  const color = Object({
+    mayor: "secondary",
+    detalle: "primary",
+  })[salesType];
+
   return sections?.map(
     (sectionGroup, i) => (
       <Grid
@@ -194,7 +199,7 @@ const MobileVersion = ({ sections, salesType, pdfType }) => {
         >
           <Box
             sx={{
-              background: theme.palette.primary.main,
+              background: theme.palette[color].main,
               width: "100%",
               mx: 1,
               mb: 1,
