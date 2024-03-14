@@ -204,7 +204,7 @@ const MobileVersion = ({ sections, salesType, pdfType }) => {
         >
           <Box
             sx={{
-              background: theme.palette[color].main,
+              background: theme.palette[color]?.main,
               width: "100%",
               mx: 1,
               mb: 1,
