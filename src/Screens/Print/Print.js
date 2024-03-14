@@ -109,6 +109,11 @@ export default function Print({ store }) {
 }
 
 const PrintVersion = ({ sections, salesType, pdfType }) => {
+  const color = Object({
+    mayor: "secondary",
+    detalle: "primary",
+  })[salesType];
+
   return sections.map((sectionGroup, i) =>
     sectionGroup.list.map((item) => {
       return (
@@ -133,7 +138,7 @@ const PrintVersion = ({ sections, salesType, pdfType }) => {
           >
             <Box
               sx={{
-                background: theme.palette.primary.main,
+                background: theme.palette[color]?.main,
                 width: "100%",
                 mx: 1,
                 mb: 1,

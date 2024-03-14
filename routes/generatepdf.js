@@ -59,7 +59,10 @@ exports.generatePDF = async (req, res) => {
     }
   };
 
-  await page.goto(address, { waitUntil: ["networkidle0", "domcontentloaded"] });
+  await page.goto(address, {
+    waitUntil: ["networkidle0", "domcontentloaded"],
+    timeout: 120000,
+  });
   await page.click(`#${req.query.type}`);
 
   let file;

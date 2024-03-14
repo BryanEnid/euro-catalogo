@@ -36,7 +36,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
         <Typography
           component="span"
           sx={{
-            background: theme.palette[color].main,
+            background: theme.palette[color]?.main,
             px: 2,
             borderRadius: 3,
             color: "white",
@@ -99,9 +99,9 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
     }
   }, []);
 
-  if (data.codigos === undefined) {
-    return <></>;
-  }
+  if (!data.codigos && !salesType) return <></>;
+
+  console.log(color);
 
   return (
     <Grid
@@ -195,16 +195,14 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
           <Box
             sx={{
               width: "100%",
-              background: theme.palette.primary.main,
+              background: theme.palette.grey[600],
               borderRadius: 2,
               overflow: "hidden",
             }}
           >
-            <Box sx={{ backdropFilter: "grayscale(120%) brightness(70%)" }}>
-              <Typography variant="caption" color="white" sx={{ my: 1 }}>
-                CODIGO
-              </Typography>
-            </Box>
+            <Typography variant="caption" color="white" sx={{ my: 1 }}>
+              CODIGO
+            </Typography>
           </Box>
           {data.codigos?.map((item, index) => {
             const [codigo, nombre] = item.split(";");
@@ -219,17 +217,17 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                   background: color,
                   borderRadius: 2,
                   my: 0.5,
+                  backdropFilter: "grayscale(100%)",
+                  WebkitFilter: "grayscale(100%)",
                 }}
               >
-                <Box sx={{ backdropFilter: "grayscale(100%)" }}>
-                  <Typography variant="body2" color="white">
-                    {nombre}
-                  </Typography>
-                  {nombre && <Divider color="white" />}
-                  <Typography variant="body2" color="white">
-                    {codigo}
-                  </Typography>
-                </Box>
+                <Typography variant="body2" color="white">
+                  {nombre}
+                </Typography>
+                {nombre && <Divider color="white" />}
+                <Typography variant="body2" color="white">
+                  {codigo}
+                </Typography>
               </Box>
             );
           })}
@@ -238,7 +236,10 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
 
       <Box sx={{ flexGrow: 1 }}>
         <Box>
-          <Typography variant="body1" sx={{ color: theme.palette[color].dark }}>
+          <Typography
+            variant="body1"
+            sx={{ color: theme.palette[color]?.dark }}
+          >
             {data.titulo}
           </Typography>
         </Box>
