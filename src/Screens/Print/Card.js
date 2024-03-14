@@ -28,6 +28,11 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
       detalle: "Al detalle",
     })[salesType];
 
+    const color = Object({
+      mayor: "secondary",
+      detalle: "primary",
+    })[salesType];
+
     if (suppress) text = "Precio";
 
     return (
@@ -61,7 +66,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
                 // background: theme.palette[color].main,
                 px: 1,
                 borderRadius: 3,
-                color: "#999",
+                color: "#777",
                 fontWeight: 400,
                 textDecoration: "line-through",
               }}
@@ -80,7 +85,7 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
               sx={{
                 fontSize: theme.typography.body1.fontSize / 1.5,
                 position: "absolute",
-                color: "#999",
+                color: "#777",
                 left: "50%",
                 transform: "translate(-50%,-50%)",
               }}
@@ -100,8 +105,6 @@ export default function Card({ data, sx, seccion, salesType, pdfType }) {
   }, []);
 
   if (!data.codigos && !salesType) return <></>;
-
-  console.log(color);
 
   return (
     <Grid
